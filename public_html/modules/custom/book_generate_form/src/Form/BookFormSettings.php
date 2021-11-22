@@ -20,13 +20,15 @@ class BookFormSettings extends FormBase
         $form['name'] = [
             '#type' => 'textfield',
             '#title' => $this->t('Book\'s title'),
-            '#placeholder' => $this->t('Имя книги')
+            '#placeholder' => $this->t('Имя книги'),
+            '#required' => true
         ];
 
         $form['author'] = [
             '#type' => 'textfield',
             '#title' => $this->t('Book\'s author'),
-            '#placeholder' => $this->t('Имя автора книги')
+            '#placeholder' => $this->t('Имя автора книги'),
+            '#required' => true
         ];
 
         $form['submit'] = [
@@ -34,18 +36,24 @@ class BookFormSettings extends FormBase
             '#value' => $this->t('submit')
         ];
 
+        $form['result'] = [
+            '#type' => 'textfield',
+            '#default_value' => 'test-value',
+            '#prefix' => '<p>Результат:</p>'
+        ];
+
         return $form;
     }
 
     public function validateForm(array &$form, FormStateInterface $form_state)
     {
-        if (strlen($form_state->getValue('name')) < 5) {
-            $form_state->setErrorByName('name', 'Поле "Имя" не может быть короче 5 символов');
-        }
+        // $form['result']['#default_value'] = 'blabla';
+        $form['result']['#default_value'] = 'my_value';
+        // $form_state->setValue(array('result' , 0 , '#default_value'), 'blabla');
     }
 
     public function submitForm(array &$form, FormStateInterface $form_state)
     {
-        $this->messenger()->addStatus('Форма сохранена');
+        $form_state->setRebuild(true);
     }
 }
