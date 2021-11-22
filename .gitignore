@@ -4,4 +4,5 @@
 /public_html/sites/*/files
 /public_html/sites/*/private
 /public_html/core
+/public_html/modules/contrib/
 /composer.lock
