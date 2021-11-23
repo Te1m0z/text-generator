@@ -5,8 +5,9 @@ namespace Drupal\book_generate_form\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
-// use Drupal\Core\Ajax\AjaxResponse;
-// use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\book_generate_form\Entity\SavedList;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Language\LanguageInterface;
 
 
 class BookFormSettings extends FormBase
@@ -40,13 +41,6 @@ class BookFormSettings extends FormBase
             '#value' => $this->t('Готово'),
             '#button_type' => 'primary',
             '#id' => 'submit-form-btn'
-            // '#ajax' => [
-            //     'callback' => '::ajaxSubmitCallback',
-            //     'event' => 'click',
-            //     'progress' => [
-            //         'type' => 'throbber',
-            //     ]
-            // ]
         );
 
         $form['result_text'] = [
@@ -62,20 +56,28 @@ class BookFormSettings extends FormBase
 
         $form['#attached']['library'][] = 'book_generate_form/book_generate_form';
 
+        $form['save_list'] = array(
+            '#type' => 'button',
+            '#value' => \Drupal::currentUser()->isAuthenticated() ? 'Сохранить список' : 'Войдите чтобы сохранить'
+        );
+
         return $form;
     }
-
-    // public function ajaxSubmitCallback(array &$form, FormStateInterface $form_state)
-    // {
-    //     $response = new AjaxResponse();
-    //     $response->addCommand(new HtmlCommand('#result-text', $form_state->getValue('name')));
-    //     $response->addCommand(new HtmlCommand('#form-result-input', $form_state->getValue('name')));
-
-    //     return $response;
-    // }
 
     public function submitForm(array &$form, FormStateInterface $form_state)
     {
         $form_state->setRebuild(true);
+
+        $created = time();
+        $uuid_service = \Drupal::service('uuid');
+        $uuid = $uuid_service->generate();
+        $lc = LanguageInterface::LANGCODE_DEFAULT;
+        $saved_list = new SavedList([
+            'uuid' => array($lc => $uuid),
+            'created' => array($lc => $created),
+            'fint' => array($lc => 10),
+            'fstring' => array($lc => 'some text'),
+        ], 'example');
+        $saved_list->save();
     }
 }

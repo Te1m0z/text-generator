@@ -1,19 +1,23 @@
-document.addEventListener('DOMContentLoaded', () => {
+(function ($) {
+    console.log($)
 
-    document.getElementById('book-generate-form').onsubmit = e => e.preventDefault()
+})(jQuery);
+// document.addEventListener('DOMContentLoaded', () => {
 
-    const bookNameInput = document.getElementById('form-book')
-    const resultText = document.getElementById('result-text')
-    const resultInput = document.getElementById('form-result-input')
+//     document.getElementById('book-generate-form').onsubmit = e => e.preventDefault()
 
-    document.getElementById('submit-form-btn').onclick = () => {
-        resultInput.value = bookNameInput.value
-        resultText.innerHTML = bookNameInput.value
+//     const bookNameInput = document.getElementById('form-book')
+//     const resultText = document.getElementById('result-text')
+//     const resultInput = document.getElementById('form-result-input')
 
-        console.log('btn clicked', bookNameInput.value)
-    }
+//     document.getElementById('submit-form-btn').onclick = () => {
+//         resultInput.value = bookNameInput.value
+//         resultText.innerHTML = bookNameInput.value
 
-    resultInput.oninput = e => {
-        resultText.innerHTML = e.target.value
-    }
-})
+//         console.log('btn clicked', bookNameInput.value)
+//     }
+
+//     resultInput.oninput = e => {
+//         resultText.innerHTML = e.target.value
+//     }
+// })
