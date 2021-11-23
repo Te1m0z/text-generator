@@ -5,3 +5,11 @@ book_generate_form.settings:
     _title: 'Book generate module'
   requirements:
     _permission: 'access content'
+    
+book_generate_form.result_stroke:
+  path: '/book/result'
+  defaults:
+    _controller: '\Drupal\book_generate_form\Controller\ResultStrokeConstroller::output'
+    _title: 'Stroke generated!'
+  requirements:
+    _permission: 'access content'
