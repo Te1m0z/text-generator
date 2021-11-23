@@ -1,0 +1,6 @@
+book_generate_form:
+  version: 1.0
+  js:
+    js/test.js: {}
+  dependencies:
+    - core/jquery
