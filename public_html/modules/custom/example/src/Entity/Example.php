@@ -7,6 +7,8 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Url;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Defines the Example entity.
@@ -80,5 +82,10 @@ class Example extends ContentEntityBase implements ContentEntityInterface
     {
         // Return default URI as a base scheme as we do not have routes yet.
         return Url::fromUri('base:entity/example/' . $this->id(), $options);
+    }
+
+    public function access($operation, AccountInterface $account = NULL, $return_as_object = FALSE)
+    {
+        return AccessResult::allowed();
     }
 }
