@@ -24,6 +24,7 @@
         "drupal/core-recommended": "^9.2",
         "drupal/devel": "^4.1",
         "drupal/pathauto": "^1.8",
+        "drupal/restui": "^1.20",
         "drupal/token": "^1.9"
     },
     "conflict": {

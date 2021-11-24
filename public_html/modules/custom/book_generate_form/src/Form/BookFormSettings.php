@@ -5,7 +5,7 @@ namespace Drupal\book_generate_form\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
-use Drupal\book_generate_form\Entity\SavedList;
+use Drupal\example\Entity\Example;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Language\LanguageInterface;
 
@@ -68,16 +68,17 @@ class BookFormSettings extends FormBase
     {
         $form_state->setRebuild(true);
 
-        // $created = time();
-        // $uuid_service = \Drupal::service('uuid');
-        // $uuid = $uuid_service->generate();
-        // $lc = LanguageInterface::LANGCODE_DEFAULT;
-        // $saved_list = new SavedList([
-        //     'uuid' => array($lc => $uuid),
-        //     'created' => array($lc => $created),
-        //     'fint' => array($lc => 10),
-        //     'fstring' => array($lc => 'some text'),
-        // ], 'example');
-        // $saved_list->save();
+        $created = time();
+        $uuid_service = \Drupal::service('uuid');
+        $uuid = $uuid_service->generate();
+        $lc = LanguageInterface::LANGCODE_DEFAULT;
+        $saved_list = new Example([
+            'uuid' => array($lc => $uuid),
+            'created' => array($lc => $created),
+            'fint' => array($lc => 10),
+            'fstring' => array($lc => 'some text'),
+            'fdecimal' => array($lc => 10.1),
+        ], 'example');
+        $saved_list->save();
     }
 }

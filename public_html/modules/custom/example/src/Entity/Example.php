@@ -15,7 +15,7 @@ use Drupal\Core\Url;
  *
  * @ContentEntityType(
  *   id = "example",
- *   label = "Example",
+ *   label = @Translation("Example"),
  *   handlers = {
  *     "views_data" = "Drupal\views\EntityViewsData",
  *   },
@@ -63,6 +63,14 @@ class Example extends ContentEntityBase implements ContentEntityInterface
                 'default_value' => '',
                 'max_length' => 100,
                 'text_processing' => 0,
+            ));
+
+        $fields['fdecimal'] = BaseFieldDefinition::create('decimal')
+            ->setLabel('Float field')
+            ->setDescription('Example float field.')
+            ->setSettings(array(
+                'precision' => 17,
+                'scale' => 2,
             ));
 
         return $fields;
