@@ -2,7 +2,6 @@ book_generate_form.settings:
   path: '/book'
   defaults:
     _form: '\Drupal\book_generate_form\Form\BookFormSettings'
-    # _controller: '\Drupal\book_generate_form\Controller\DisplaySaveBtnController::output'
     _title: 'Book generate module'
   requirements:
     _permission: 'access content'

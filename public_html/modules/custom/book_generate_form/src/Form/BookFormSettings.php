@@ -44,7 +44,7 @@ class BookFormSettings extends FormBase
         );
 
         $form['result_text'] = [
-            '#markup' => '<div id="result-text"></div>',
+            '#markup' => '<div id="result-text">' . $form_state->getValue('result_input') . '</div>',
             '#prefix' => '<p>' . $this->t('Результат:') . '</p>'
         ];
 
@@ -68,16 +68,16 @@ class BookFormSettings extends FormBase
     {
         $form_state->setRebuild(true);
 
-        $created = time();
-        $uuid_service = \Drupal::service('uuid');
-        $uuid = $uuid_service->generate();
-        $lc = LanguageInterface::LANGCODE_DEFAULT;
-        $saved_list = new SavedList([
-            'uuid' => array($lc => $uuid),
-            'created' => array($lc => $created),
-            'fint' => array($lc => 10),
-            'fstring' => array($lc => 'some text'),
-        ], 'example');
-        $saved_list->save();
+        // $created = time();
+        // $uuid_service = \Drupal::service('uuid');
+        // $uuid = $uuid_service->generate();
+        // $lc = LanguageInterface::LANGCODE_DEFAULT;
+        // $saved_list = new SavedList([
+        //     'uuid' => array($lc => $uuid),
+        //     'created' => array($lc => $created),
+        //     'fint' => array($lc => 10),
+        //     'fstring' => array($lc => 'some text'),
+        // ], 'example');
+        // $saved_list->save();
     }
 }
