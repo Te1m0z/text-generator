@@ -9,6 +9,8 @@ use Drupal\example\Entity\Example;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Language\LanguageInterface;
 
+use Drupal\node\Entity\Node;
+
 
 class BookFormSettings extends FormBase
 {
@@ -37,7 +39,7 @@ class BookFormSettings extends FormBase
         ];
 
         $form['submit'] = array(
-            '#type' => 'submit',
+            '#type' => 'button',
             '#value' => $this->t('Готово'),
             '#button_type' => 'primary',
             '#id' => 'submit-form-btn'
@@ -57,7 +59,7 @@ class BookFormSettings extends FormBase
         $form['#attached']['library'][] = 'book_generate_form/book_generate_form';
 
         $form['save_list'] = array(
-            '#type' => 'button',
+            '#type' => 'submit',
             '#value' => \Drupal::currentUser()->isAuthenticated() ? 'Сохранить список' : 'Войдите чтобы сохранить'
         );
 
@@ -68,17 +70,20 @@ class BookFormSettings extends FormBase
     {
         $form_state->setRebuild(true);
 
-        $created = time();
-        $uuid_service = \Drupal::service('uuid');
-        $uuid = $uuid_service->generate();
-        $lc = LanguageInterface::LANGCODE_DEFAULT;
-        $saved_list = new Example([
-            'uuid' => array($lc => $uuid),
-            'created' => array($lc => $created),
-            'fint' => array($lc => 10),
-            'fstring' => array($lc => 'some text'),
-            'fdecimal' => array($lc => 10.1),
-        ], 'example');
-        $saved_list->save();
+        $node = Node::create([
+            'type' => 'page',
+            'title' => 'Книга',
+            'langcode' => 'ru',
+            'status' => 1,
+            'body' => [
+                [
+                    'value' => '<p>Hello World/p>',
+                    'summary' => '',
+                    'format' => 'full_html',
+                ]
+            ]
+        ]);
+
+        $node->save();
     }
 }

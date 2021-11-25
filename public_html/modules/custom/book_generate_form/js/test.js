@@ -8,5 +8,9 @@
         $('#form-result-input').on('input', function (event) {
             $('#result-text').html(event.target.value)
         })
+
+        $('#submit-form-btn').click(function (event) {
+            event.preventDefault()
+        })
     })
 })(jQuery)
