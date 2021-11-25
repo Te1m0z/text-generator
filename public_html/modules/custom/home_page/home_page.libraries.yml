@@ -1,0 +1,5 @@
+home_page:
+  version: 1.x
+  css:
+    layout:
+      css/style.css: {}

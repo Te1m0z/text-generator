@@ -20,8 +20,8 @@ class DisplayLists extends ControllerBase
         }
 
         return [
-          '#markup' => $str,
-          '#title' => 'My lists'
+            '#title' => 'My lists',
+            '#markup' => $node->body->value,
         ];
     }
 }

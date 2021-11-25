@@ -1,4 +1,4 @@
-name: 'Display entities on home page'
+name: 'home_page'
 type: 'module'
 description: none
 package: custom

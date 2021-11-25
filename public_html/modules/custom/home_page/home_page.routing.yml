@@ -1,0 +1,8 @@
+home_page.settings:
+  path: '/home'
+  defaults:
+    _controller: '\Drupal\home_page\Controller\Welcome::output'
+    _title: 'Генератор текстов'
+  requirements:
+    _permission: 'access content'
+    _role: 'anonymous+authenticated'

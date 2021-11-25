@@ -1,8 +1,0 @@
-display_lists.settings:
-  path: '/my-lists'
-  defaults:
-    _controller: '\Drupal\display_lists\Controller\DisplayLists::output'
-    _title: 'none'
-  requirements:
-    _permission: 'access content'
-    _role: 'authenticated'

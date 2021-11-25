@@ -2,7 +2,7 @@ display_lists.settings:
   path: '/my-lists'
   defaults:
     _controller: '\Drupal\display_lists\Controller\DisplayLists::output'
-    _title: 'none'
+    _title: 'Мои списки'
   requirements:
     _permission: 'access content'
     _role: 'authenticated'
