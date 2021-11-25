@@ -3,24 +3,22 @@
 namespace Drupal\display_lists\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-
+use Drupal\node\Entity\Node;
 
 class DisplayLists extends ControllerBase
 {
     public function output()
     {
-        $query = \Drupal::entityQuery('node');
-        $query->condition('type', 'page', '=');
-        $query->condition('uid', '2', '=');
-        $ids = $query->execute();
-        $nodes = \Drupal\node\Entity\Node::loadMultiple($ids);
+        $user_id = \Drupal::currentUser()->id();
+        $nids = \Drupal::entityQuery('node')->condition('uid', $user_id)->execute();
+        $nodes = Node::loadMultiple($nids);
+
+        $str = '';
+
         foreach ($nodes as $node) {
-            dpm($node->body->value);
+            $str .= $node->body->value . '<br/>';
         }
 
-        return [
-            '#title' => 'dada',
-            '#markup' => '<h1>' . '</h1>'
-        ];
+        return $nodes;
     }
 }

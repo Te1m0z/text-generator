@@ -70,20 +70,11 @@ class BookFormSettings extends FormBase
     {
         $form_state->setRebuild(true);
 
-        $node = Node::create([
-            'type' => 'page',
-            'title' => 'Книга',
-            'langcode' => 'ru',
-            'status' => 1,
-            'body' => [
-                [
-                    'value' => '<p>Hello World/p>',
-                    'summary' => '',
-                    'format' => 'full_html',
-                ]
-            ]
-        ]);
-
+        $node = Node::create(['type' => 'article']);
+        $node->setTitle('Книга сгенерирована');
+        $node->body->value = $form_state->getValue('name');
+        $node->body->format = 'full_html';
+        $node->setPublished(true);
         $node->save();
     }
 }

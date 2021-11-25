@@ -4,4 +4,5 @@ display_lists.settings:
     _controller: '\Drupal\display_lists\Controller\DisplayLists::output'
     _title: 'none'
   requirements:
-    _permission: 'view content'
+    _permission: 'access content'
+    _role: 'authenticated'
