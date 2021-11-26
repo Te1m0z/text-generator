@@ -4,17 +4,12 @@ namespace Drupal\book_generate_form\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-
-use Drupal\example\Entity\Example;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Language\LanguageInterface;
-
 use Drupal\node\Entity\Node;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 
 class BookFormSettings extends FormBase
 {
-
     public function getFormId()
     {
         return 'book-generate-form';
@@ -60,7 +55,7 @@ class BookFormSettings extends FormBase
 
         $form['save_list'] = array(
             '#type' => 'submit',
-            '#value' => \Drupal::currentUser()->isAuthenticated() ? 'Сохранить список' : 'Войдите чтобы сохранить'
+            '#value' => \Drupal::currentUser()->isAuthenticated() ? 'Сохранить список' : 'Войдите чтобы сохранить',
         );
 
         return $form;
@@ -70,11 +65,18 @@ class BookFormSettings extends FormBase
     {
         $form_state->setRebuild(true);
 
-        $node = Node::create(['type' => 'article']);
-        $node->setTitle('Книга сгенерирована');
-        $node->body->value = $form_state->getValue('name');
-        $node->body->format = 'full_html';
-        $node->setPublished(true);
-        $node->save();
+        if (\Drupal::currentUser()->isAuthenticated()) {
+            $node = Node::create(['type' => 'article']);
+            $node->setTitle('Книга');
+            $node->body->value = $form_state->getValue('name');
+            $node->body->format = 'full_html';
+            $node->setPublished(true);
+            $node->save();
+
+            $this->messenger()->addMessage('Книга успешно сохранина!');
+        } else {
+            $response = new RedirectResponse('/user/login', 301);
+            $response->send();
+        }
     }
 }
