@@ -5,12 +5,3 @@ book_generate_form.settings:
     _title: 'Book generate module'
   requirements:
     _permission: 'access content'
-user.login:
-  path: '/user/login'
-  defaults:
-    _form: '\Drupal\user\Form\UserLoginForm'
-    _title: 'Log in'
-  requirements:
-    _user_is_logged_in: 'FALSE'
-  options:
-    _maintenance_access: TRUE

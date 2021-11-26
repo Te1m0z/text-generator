@@ -9,12 +9,17 @@ class Welcome extends ControllerBase
     public function output()
     {
         return [
-            '#title' => 'Генератор списков литературы',
+            '#title' => 'Добро пожаловать',
+            '#attached' => [
+                'library' => 'home_page/home_page',
+            ],
             '#markup' =>
             '<div class="welcome">
-                <h2>Добро пожаловать</h2>
-                <div>
-                    <a href="/book">Создать список для книги</a>
+                <h4>Выберите тип материала:</h4>
+                <div class="welcome-nav">
+                    <a href="/book">Книга</a>
+                    <a href="/journal">Статья в журнале</a>
+                    <a href="/collection">Статья в сборнике</a>
                 </div>
             </div>'
         ];

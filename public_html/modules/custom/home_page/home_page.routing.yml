@@ -5,4 +5,4 @@ home_page.settings:
     _title: 'Генератор текстов'
   requirements:
     _permission: 'access content'
-    _role: 'anonymous+authenticated'
+    # _role: 'anonymous+authenticated'

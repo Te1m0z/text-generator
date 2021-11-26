@@ -1,5 +1,5 @@
 home_page:
   version: 1.x
   css:
-    layout:
+    module:
       css/style.css: {}
