@@ -18,6 +18,13 @@ class BookFormSettings extends FormBase
     public function buildForm(array $form, FormStateInterface $form_state)
     {
 
+        $form['title'] = [
+            '#type' => 'textfield',
+            '#title' => 'Название списка',
+            '#placeholder' => 'Толстой. Война и мир',
+            '#required' => false,
+        ];
+
         $form['name'] = [
             '#type' => 'textfield',
             '#title' => $this->t('Book\'s title'),
@@ -67,9 +74,10 @@ class BookFormSettings extends FormBase
 
         if (\Drupal::currentUser()->isAuthenticated()) {
             $node = Node::create(['type' => 'article']);
-            $node->setTitle('Книга');
+            $node->setTitle($form_state->getValue('title'));
             $node->body->value = $form_state->getValue('name');
             $node->body->format = 'full_html';
+            $node->field_type->value = 'Книга';
             $node->setPublished(true);
             $node->save();
 
