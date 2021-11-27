@@ -2,6 +2,6 @@ book_generate_form.settings:
   path: '/book'
   defaults:
     _form: '\Drupal\book_generate_form\Form\BookFormSettings'
-    _title: 'Book generate module'
+    _title: 'Создать спискок для книги'
   requirements:
     _permission: 'access content'
