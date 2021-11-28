@@ -17,44 +17,42 @@ class BookFormSettings extends FormBase
         return 'book-generate-form';
     }
 
-    public function check_e_version(array $form, FormStateInterface $form_state)
+    public function myAjaxCallback(array $form, FormStateInterface $form_state)
     {
-        $this->messenger()->addStatus('test');
-        $form_state->setValueForElement($form['nav_field'], ['#value' => '1111']);
+        $form['output']['#value'] = '11';
+        $form['output']['#type'] = 'hidden';
 
-        return $form;
+        return $form['output'];
     }
 
     public function buildForm(array $form, FormStateInterface $form_state)
     {
 
-        // $form['nav_e-version_checkbox'] = [
-        //     '#type' => 'checkbox',
-        //     '#title' => 'У меня электронная версия',
-            // '#options' => [
-            //     '1' => 'Бумажный',
-            //     '2' => 'Электронный'
-            // ],
-        //     '#ajax' => [
-        //         'callback' => '::check_e_version',
-        //         // 'wrapper' => 'e_version_wrapper',
-        //         'event' => 'change'
-        //     ],
-        // ];
-
-        // $form['nav_field'] = [
-        //     '#type' => 'textfield',
+        // $form['output'] = [
+        //     '#type' => 'textarea',
         //     '#title' => 'URL',
-        //     // '#placeholder' => 'https://example.com',
+        //     '#placeholder' => 'https://example.com',
         //     '#required' => true,
         //     '#id' => 'form-book-url',
-        //     '#value' => 'da'
+        //     '#prefix' => '<div id="edit-output">',
+        //     '#suffix' => '</div>',
+        //     '#value' => 'da',
         // ];
 
         $form['title'] = [
             '#type' => 'textfield',
             '#title' => 'Название списка (необязательно)',
             '#placeholder' => 'Толстой. Война и мир'
+        ];
+
+        $form['language'] = [
+            '#type' => 'select',
+            '#title' => 'Язык издания',
+            '#options' => [
+                'ru' => 'Русский',
+                'en' => 'Английский'
+            ],
+            '#id' => 'form-book-lang'
         ];
 
         $form['author'] = [
@@ -159,7 +157,7 @@ class BookFormSettings extends FormBase
 
 
         $form['display_result'] = [
-            '#type' => 'button',
+            '#type' => 'submit',
             '#value' => 'Посмотреть результат',
             '#id' => 'display-stroke-form-btn',
         ];

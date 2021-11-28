@@ -1,5 +1,6 @@
 (function ($) {
     $(document).ready(function () {
+
         $('#display-stroke-form-btn').click(function (event) {
             event.preventDefault()
 
@@ -24,9 +25,20 @@
         let publish = $('#form-book-publish').val()
         let year = $('#form-book-year').val()
         let pages = $('#form-book-pages').val()
+        let lang = $('#form-book-lang').val()
 
+        let isRU = (lang === 'ru') ? true : false
 
-        let stroke = `<i>${author}</i> ${name}. ${city} : ${publish}, ${year}. ${pages} с.`
+        let stroke = `<i>${author}</i> ${name}. ${city} : ${publish}, ${year}. ${pages} ${isRU ? 'с' : 'p'}.`
+
+        if (tomeNum && tomeMax) {
+            stroke = `<i>${author}</i> ${name} : ${isRU ? 'в' : 'in'} ${tomeMax} ${isRU ? 'т' : 'v'}. ${isRU ? 'Т' : 'Vol'}. ${tomeNum}. ${city} : ${publish}, ${year}. ${pages} ${isRU ? 'с' : 'p'}.`
+        }
+
+        // если есть название тома
+        if (tomeNum && tomeMax && tomeName) {
+            stroke = `<i>${author}</i> ${name} : ${isRU ? 'в' : 'in'} ${tomeMax} ${isRU ? 'т' : 'v'}. ${isRU ? 'Т' : 'Vol'}. ${tomeNum} : ${tomeName}. ${city} : ${publish}, ${year}. ${pages} ${isRU ? 'с' : 'p'}.`
+        }
 
         return stroke
     }
