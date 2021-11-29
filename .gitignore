@@ -1,7 +1,10 @@
-/vendor/
-/public_html/sites/*/files
-/public_html/sites/*/private
-/public_html/sites/default/settings.php
-/public_html/core/
-/public_html/modules/contrib/
-/composer.lock
+vendor/
+public_html/sites/*/files
+public_html/sites/*/private
+public_html/sites/default/settings.php
+/public_html/core/**/*.*
+/public_html/core/assets/*
+/public_html/core/scripts/*
+!public_html/core/themes/bartik/css/components/table.css
+public_html/modules/contrib/
+composer.lock
