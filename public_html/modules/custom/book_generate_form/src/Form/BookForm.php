@@ -6,6 +6,8 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\HtmlCommand;
 
 class BookForm extends FormBase
 {
@@ -14,32 +16,48 @@ class BookForm extends FormBase
         return 'book-generate-form';
     }
 
-    public function myAjaxCallback(array $form, FormStateInterface $form_state)
+    function returnAjax($form, FormStateInterface $form_state)
     {
-        $form['output']['#value'] = '11';
-        $form['output']['#type'] = 'hidden';
+        // $form['url']['type'] = 'textarea';
 
-        return $form['output'];
+        $response = new AjaxResponse();
+
+        $content = [];
+
+        if ($form_state->getValue('type-book') == 'electronic') {
+            $content[] = $form['url'];
+            $content[] = $form['date'];
+        } else {
+            $content = null;
+        }
+
+        $response->addCommand(new HtmlCommand('#edit-fields-book-url', $content));
+
+        return $response;
     }
 
     public function buildForm(array $form, FormStateInterface $form_state)
     {
 
-        // $form['output'] = [
-        //     '#type' => 'textarea',
-        //     '#title' => 'URL',
-        //     '#placeholder' => 'https://example.com',
-        //     '#required' => true,
-        //     '#id' => 'form-book-url',
-        //     '#prefix' => '<div id="edit-output">',
-        //     '#suffix' => '</div>',
-        //     '#value' => 'da',
-        // ];
-
         $form['title'] = [
             '#type' => 'textfield',
             '#title' => 'Название списка (необязательно)',
             '#placeholder' => 'Толстой. Война и мир'
+        ];
+
+        $form['type-book'] = [
+            '#type' => 'select',
+            '#title' => 'Тип материала',
+            '#options' => [
+                'book' => 'Книжный',
+                'electronic' => 'Электронный'
+            ],
+            '#ajax' => [
+                'callback' => '::returnAjax',
+                'wrapper' => 'edit-fields-book-url',
+                'method' => 'replace',
+                'effect' => 'fade'
+            ],
         ];
 
         $form['language'] = [
@@ -138,13 +156,30 @@ class BookForm extends FormBase
             '#id' => 'form-book-pages'
         ];
 
-        // $form['e-version'] = [
-        //     '#type' => 'textfield',
-        //     '#title' => 'URL',
-        //     '#placeholder' => 'https://example.com',
-        //     '#required' => true,
-        //     '#id' => 'form-book-url'
-        // ];
+        // hidden fiels //
+
+        $form['url'] = [
+            '#type' => 'textarea',
+            '#title' => 'URL',
+            '#placeholder' => 'https://example.com',
+            '#required' => true,
+            '#id' => 'form-book-url',
+            '#access' => $form_state->getValue('type-book') == 'electronic'
+        ];
+
+        $form['date'] = [
+            '#type' => 'date',
+            '#title' => 'Дата обращения',
+            '#date_format' => 'd.m.Y',
+            '#required' => true,
+            '#id' => 'form-book-date',
+            '#access' => $form_state->getValue('type-book') === 'electronic'
+        ];
+
+        $form['url-conatiner'] = [
+            '#type' => 'container',
+            '#id' => 'edit-fields-book-url'
+        ];
 
 
 
