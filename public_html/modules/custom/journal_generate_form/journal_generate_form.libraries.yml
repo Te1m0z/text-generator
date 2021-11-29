@@ -1,0 +1,9 @@
+journal_generate_form:
+  version: 1.0
+  js:
+    js/script.js: {}
+  css:
+    module:
+      css/styles.css: {}
+  dependencies:
+    - core/jquery

@@ -1,0 +1,7 @@
+journal_generate_form.settings:
+  path: '/journal'
+  defaults:
+    _form: '\Drupal\journal_generate_form\Form\JournalForm'
+    _title: 'Создать спискок для журнала'
+  requirements:
+    _permission: 'access content'

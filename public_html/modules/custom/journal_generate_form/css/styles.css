@@ -1,9 +1,9 @@
-.book-generate-form textarea {
+.journal-generate-form textarea {
     max-width: 500px;
     max-height: 130px;
 }
 
-#result-book-text {
+#result-journal-text {
     margin-top: 10px;
     min-height: 10px;
     font-size: 22px;

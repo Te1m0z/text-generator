@@ -1,20 +1,17 @@
 <?php
 
-namespace Drupal\book_generate_form\Form;
+namespace Drupal\journal_generate_form\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-// use Drupal\Core\Ajax;
-// use Drupal\Core\Ajax\AjaxResponse;
-// use Drupal\Core\Ajax\ReplaceCommand;
 
-class BookFormSettings extends FormBase
+class JournalForm extends FormBase
 {
     public function getFormId()
     {
-        return 'book-generate-form';
+        return 'journal-generate-form';
     }
 
     public function myAjaxCallback(array $form, FormStateInterface $form_state)
@@ -27,17 +24,6 @@ class BookFormSettings extends FormBase
 
     public function buildForm(array $form, FormStateInterface $form_state)
     {
-
-        // $form['output'] = [
-        //     '#type' => 'textarea',
-        //     '#title' => 'URL',
-        //     '#placeholder' => 'https://example.com',
-        //     '#required' => true,
-        //     '#id' => 'form-book-url',
-        //     '#prefix' => '<div id="edit-output">',
-        //     '#suffix' => '</div>',
-        //     '#value' => 'da',
-        // ];
 
         $form['title'] = [
             '#type' => 'textfield',
@@ -52,25 +38,45 @@ class BookFormSettings extends FormBase
                 'ru' => 'Русский',
                 'en' => 'Английский'
             ],
-            '#id' => 'form-book-lang'
+            '#id' => 'form-journal-lang'
         ];
 
         $form['author'] = [
             '#type' => 'textarea',
             '#title' => 'Автор(ы)',
-            '#placeholder' => 'Иванов И. И.',
+            '#placeholder' => 'Антонов С. Ю., Антонова А. В.',
             '#required' => true,
-            '#id' => 'form-book-author',
+            '#id' => 'form-journal-author',
+            '#rows' => '2'
+        ];
+
+        $form['release'] = [
+            '#type' => 'textarea',
+            '#title' => 'Название статьи',
+            '#placeholder' => 'К теореме Ченга. II',
+            '#required' => true,
+            '#id' => 'form-journal-release',
             '#rows' => '2'
         ];
 
         $form['name'] = [
             '#type' => 'textarea',
-            '#title' => 'Название книги',
-            '#placeholder' => 'Война и мир',
+            '#title' => 'Название журнала',
+            '#placeholder' => 'Дифферинциальные уравнения',
             '#required' => true,
-            '#id' => 'form-book-name',
+            '#id' => 'form-journal-name',
             '#rows' => '2'
+        ];
+
+        $form['year'] = [
+            '#type' => 'textfield',
+            '#attributes' => [
+                ' type' => 'number',
+            ],
+            '#title' => 'Год издания',
+            '#placeholder' => '2017',
+            '#required' => false,
+            '#id' => 'form-journal-year'
         ];
 
         $form['tome-num'] = [
@@ -79,99 +85,71 @@ class BookFormSettings extends FormBase
                 ' type' => 'number',
             ],
             '#title' => 'Номер тома',
-            '#placeholder' => '3',
+            '#placeholder' => '17',
             '#required' => false,
-            '#id' => 'form-book-tome-num'
+            '#id' => 'form-journal-tome-num'
         ];
 
-        $form['tome-max'] = [
+        $form['volume'] = [
             '#type' => 'textfield',
             '#attributes' => [
                 ' type' => 'number',
             ],
-            '#title' => 'Всего томов',
-            '#placeholder' => '5',
+            '#title' => 'Номер выпуска',
+            '#placeholder' => '6',
             '#required' => false,
-            '#id' => 'form-book-tome-max'
+            '#id' => 'form-journal-volume'
         ];
 
-        $form['tome-name'] = [
-            '#type' => 'textfield',
-            '#title' => 'Название тома',
-            '#placeholder' => 'Том первый',
-            '#required' => false,
-            '#id' => 'form-book-tome-name'
-        ];
-
-        $form['city'] = [
-            '#type' => 'textfield',
-            '#title' => 'Место издания (город)',
-            '#placeholder' => 'Саратов',
-            '#required' => true,
-            '#id' => 'form-book-city'
-        ];
-
-        $form['publish'] = [
-            '#type' => 'textfield',
-            '#title' => 'Издательство',
-            '#placeholder' => 'Наука',
-            '#required' => true,
-            '#id' => 'form-book-publish'
-        ];
-
-        $form['year'] = [
+        $form['pages-from'] = [
             '#type' => 'textfield',
             '#attributes' => [
                 ' type' => 'number'
             ],
-            '#title' => 'Год издания',
-            '#placeholder' => '2018',
-            '#required' => true,
-            '#id' => 'form-book-year'
+            '#title' => 'С какой страницы',
+            '#placeholder' => '127',
+            '#required' => false,
+            '#id' => 'form-journal-pages-from'
         ];
 
-        $form['pages'] = [
+        $form['pages-to'] = [
             '#type' => 'textfield',
             '#attributes' => [
                 ' type' => 'number'
             ],
-            '#title' => 'Количество страниц',
-            '#placeholder' => '240',
-            '#required' => true,
-            '#id' => 'form-book-pages'
+            '#title' => 'По какую страницу',
+            '#placeholder' => '137',
+            '#required' => false,
+            '#id' => 'form-journal-pages-to'
         ];
 
-        // $form['e-version'] = [
-        //     '#type' => 'textfield',
-        //     '#title' => 'URL',
-        //     '#placeholder' => 'https://example.com',
-        //     '#required' => true,
-        //     '#id' => 'form-book-url'
-        // ];
-
-
-
-
-
+        $form['other'] = [
+            '#type' => 'textarea',
+            '#title' => 'Долнительные данные',
+            '#placeholder' => '',
+            '#required' => false,
+            '#id' => 'form-journal-other',
+            '#rows' => '2'
+        ];
 
 
 
         $form['display_result'] = [
             '#type' => 'submit',
             '#value' => 'Посмотреть результат',
-            '#id' => 'display-stroke-form-btn',
+            '#id' => 'display-journal-stroke-form-btn',
         ];
 
         $form['result_text'] = [
             '#type' => 'item',
             '#title' => 'Результат:',
-            '#markup' => '<div id="result-text"></div>',
+            '#markup' => '<div id="result-journal-text"></div>',
         ];
 
         $form['result_input'] = [
             '#type' => 'textarea',
             '#title' => 'Редактировать:',
-            '#id' => 'form-result-input',
+            '#id' => 'form-journal-result-input',
             '#rows' => '2',
         ];
 
@@ -181,7 +159,7 @@ class BookFormSettings extends FormBase
             '#button_type' => 'primary',
         ];
 
-        $form['#attached']['library'][] = 'book_generate_form/book_generate_form';
+        $form['#attached']['library'][] = 'journal_generate_form/journal_generate_form';
 
         return $form;
     }
@@ -197,11 +175,11 @@ class BookFormSettings extends FormBase
             $node->setTitle($title_val !== '' ? $title_val : 'Список без заголовка');
             $node->body->value = $form_state->getValue('result_input');
             $node->body->format = 'full_html';
-            $node->field_type->value = 'Книга';
+            $node->field_type->value = 'Журнал';
             $node->setPublished(true);
             $node->save();
 
-            $this->messenger()->addMessage('Книга успешно сохранина!');
+            $this->messenger()->addMessage('Журнал успешно сохранён!');
         } else {
             $response = new RedirectResponse('/user/login', 301);
             $response->send();

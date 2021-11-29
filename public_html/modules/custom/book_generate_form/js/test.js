@@ -1,17 +1,17 @@
 (function ($) {
     $(document).ready(function () {
 
-        $('#display-stroke-form-btn').click(function (event) {
+        $('#display-book-stroke-form-btn').click(function (event) {
             event.preventDefault()
 
             let str = getBookStroke()
 
-            $('#form-result-input').val(str)
-            $('#result-text').html(str)
+            $('#form-book-result-input').val(str)
+            $('#result-book-text').html(str)
         })
 
-        $('#form-result-input').on('input', function (event) {
-            $('#result-text').html(event.target.value)
+        $('#form-book-result-input').on('input', function (event) {
+            $('#result-book-text').html(event.target.value)
         })
     })
 
