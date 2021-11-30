@@ -263,7 +263,8 @@ class BookForm extends FormBase
             '#title' => 'Редактировать:',
             '#id' => 'form-book-result-input',
             '#rows' => '2',
-            '#description' => 'В "Мои списки" сохранится текст из поля "Редактировать"'
+            '#description' => 'В "Мои списки" сохранится текст из поля "Редактировать"',
+            '#required' => true
         ];
 
         $form['submit'] = [
