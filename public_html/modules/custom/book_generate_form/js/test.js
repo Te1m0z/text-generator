@@ -16,6 +16,7 @@
     })
 
     function getBookStroke() {
+        let doi = $('#form-book-doi').val()
         let author = $('#form-book-author').val()
         let name = $('#form-book-name').val()
         let tomeNum = $('#form-book-tome-num').val()
@@ -25,12 +26,19 @@
         let publish = $('#form-book-publish').val()
         let year = $('#form-book-year').val()
         let pages = $('#form-book-pages').val()
+        let other = $('#form-book-other').val()
+        let release = $('#form-book-release').val()
+        let url = $('#form-book-url').val()
+        let date = $('#form-book-date').val()
         let lang = $('#form-book-lang').val()
+        let material = $('#form-book-material').val()
 
-        let isRU = (lang === 'ru') ? true : false
+        let isRU = (lang === 'ru')
+        let isEVersion = (material === 'electronic')
 
         let stroke = `<i>${author}</i> ${name}. ${city} : ${publish}, ${year}. ${pages} ${isRU ? 'с' : 'p'}.`
 
+        // если есть том
         if (tomeNum && tomeMax) {
             stroke = `<i>${author}</i> ${name} : ${isRU ? 'в' : 'in'} ${tomeMax} ${isRU ? 'т' : 'v'}. ${isRU ? 'Т' : 'Vol'}. ${tomeNum}. ${city} : ${publish}, ${year}. ${pages} ${isRU ? 'с' : 'p'}.`
         }
@@ -39,6 +47,22 @@
         if (tomeNum && tomeMax && tomeName) {
             stroke = `<i>${author}</i> ${name} : ${isRU ? 'в' : 'in'} ${tomeMax} ${isRU ? 'т' : 'v'}. ${isRU ? 'Т' : 'Vol'}. ${tomeNum} : ${tomeName}. ${city} : ${publish}, ${year}. ${pages} ${isRU ? 'с' : 'p'}.`
         }
+
+        // если есть серия
+        if (release) stroke += ` (${release}).`
+
+        // если электронная версия
+        if (isEVersion) {
+            // let _url = url.current.value || '',
+            //     _date = date.current.getAttribute("re-date") || '';
+            stroke += ` URL: ${url} (${isRU ? 'дата обращения' : 'accessed'}: ${date}).`
+        }
+
+        // если есть doi
+        if (doi) stroke += ` ${(/https:\/\/doi.org\//gi.test(doi) ? '' : 'https://doi.org/') + doi}`;
+
+        // прочее
+        if (other) stroke += ` ${other}`;
 
         return stroke
     }

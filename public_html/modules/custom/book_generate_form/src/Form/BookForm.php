@@ -16,22 +16,34 @@ class BookForm extends FormBase
         return 'book-generate-form';
     }
 
+    function setDoiUrl($form, FormStateInterface $form_state)
+    {
+
+        $response = new AjaxResponse();
+        // $form['doi-check']['#markup'] = '<a target="_blank" href=' . 'https://doi.org/' . $form_state->getValue('input-doi') . '>Проверить DOI</a>';
+        // $form['doi-check']['#markup'] = $form_state->getValue('input-doi');
+
+        $response->addCommand(new HtmlCommand('#form-book-check-doi', [
+            '#markup' => '<a target="_blank" href=' . 'https://doi.org/' . $form_state->getValue('input-doi') . '>Проверить DOI</a>'
+        ]));
+
+        return $response;
+    }
+
     function returnAjax($form, FormStateInterface $form_state)
     {
-        // $form['url']['type'] = 'textarea';
-
         $response = new AjaxResponse();
 
         $content = [];
 
-        if ($form_state->getValue('type-book') == 'electronic') {
-            $content[] = $form['url'];
-            $content[] = $form['date'];
+        if ($form_state->getValue('select-material') == 'electronic') {
+            $content[] = $form['input-url'];
+            $content[] = $form['input-date'];
         } else {
             $content = null;
         }
 
-        $response->addCommand(new HtmlCommand('#edit-fields-book-url', $content));
+        $response->addCommand(new HtmlCommand('#edit-fields-book-e-version', $content));
 
         return $response;
     }
@@ -39,13 +51,13 @@ class BookForm extends FormBase
     public function buildForm(array $form, FormStateInterface $form_state)
     {
 
-        $form['title'] = [
+        $form['input-title'] = [
             '#type' => 'textfield',
             '#title' => 'Название списка (необязательно)',
             '#placeholder' => 'Толстой. Война и мир'
         ];
 
-        $form['type-book'] = [
+        $form['select-material'] = [
             '#type' => 'select',
             '#title' => 'Тип материала',
             '#options' => [
@@ -54,13 +66,14 @@ class BookForm extends FormBase
             ],
             '#ajax' => [
                 'callback' => '::returnAjax',
-                'wrapper' => 'edit-fields-book-url',
+                'wrapper' => 'edit-fields-book-e-version',
                 'method' => 'replace',
                 'effect' => 'fade'
             ],
+            '#id' => 'form-book-material'
         ];
 
-        $form['language'] = [
+        $form['select-language'] = [
             '#type' => 'select',
             '#title' => 'Язык издания',
             '#options' => [
@@ -70,7 +83,28 @@ class BookForm extends FormBase
             '#id' => 'form-book-lang'
         ];
 
-        $form['author'] = [
+        $form['input-doi'] = [
+            '#type' => 'textfield',
+            '#title' => 'DOI (просто номер, без https...)',
+            '#placeholder' => '12345',
+            '#description' => 'Если есть, обязательно',
+            '#required' => false,
+            '#id' => 'form-book-doi',
+            '#ajax' => [
+                'event' => 'input',
+                'callback' => '::setDoiUrl',
+                'wrapper' => 'form-book-check-doi',
+                'method' => 'replace',
+            ]
+        ];
+
+        $form['check-doi'] = [
+            '#type' => 'item',
+            '#id' => 'form-book-check-doi',
+            '#markup' => '<a href=' . $form_state->getValue('input-doi') . '>Проверить DOI</a>'
+        ];
+
+        $form['input-author'] = [
             '#type' => 'textarea',
             '#title' => 'Автор(ы)',
             '#placeholder' => 'Иванов И. И.',
@@ -79,7 +113,7 @@ class BookForm extends FormBase
             '#rows' => '2'
         ];
 
-        $form['name'] = [
+        $form['input-name'] = [
             '#type' => 'textarea',
             '#title' => 'Название книги',
             '#placeholder' => 'Война и мир',
@@ -88,7 +122,7 @@ class BookForm extends FormBase
             '#rows' => '2'
         ];
 
-        $form['tome-num'] = [
+        $form['input-tome-num'] = [
             '#type' => 'textfield',
             '#attributes' => [
                 ' type' => 'number',
@@ -99,7 +133,7 @@ class BookForm extends FormBase
             '#id' => 'form-book-tome-num'
         ];
 
-        $form['tome-max'] = [
+        $form['input-tome-max'] = [
             '#type' => 'textfield',
             '#attributes' => [
                 ' type' => 'number',
@@ -110,7 +144,7 @@ class BookForm extends FormBase
             '#id' => 'form-book-tome-max'
         ];
 
-        $form['tome-name'] = [
+        $form['input-tome-name'] = [
             '#type' => 'textfield',
             '#title' => 'Название тома',
             '#placeholder' => 'Том первый',
@@ -118,7 +152,7 @@ class BookForm extends FormBase
             '#id' => 'form-book-tome-name'
         ];
 
-        $form['city'] = [
+        $form['input-city'] = [
             '#type' => 'textfield',
             '#title' => 'Место издания (город)',
             '#placeholder' => 'Саратов',
@@ -126,7 +160,7 @@ class BookForm extends FormBase
             '#id' => 'form-book-city'
         ];
 
-        $form['publish'] = [
+        $form['input-publish'] = [
             '#type' => 'textfield',
             '#title' => 'Издательство',
             '#placeholder' => 'Наука',
@@ -134,7 +168,7 @@ class BookForm extends FormBase
             '#id' => 'form-book-publish'
         ];
 
-        $form['year'] = [
+        $form['input-year'] = [
             '#type' => 'textfield',
             '#attributes' => [
                 ' type' => 'number'
@@ -145,7 +179,7 @@ class BookForm extends FormBase
             '#id' => 'form-book-year'
         ];
 
-        $form['pages'] = [
+        $form['input-pages'] = [
             '#type' => 'textfield',
             '#attributes' => [
                 ' type' => 'number'
@@ -156,29 +190,41 @@ class BookForm extends FormBase
             '#id' => 'form-book-pages'
         ];
 
+        $form['input-other'] = [
+            '#type' => 'textarea',
+            '#title' => 'Прочее',
+            '#id' => 'form-book-other'
+        ];
+
+        $form['input-release'] = [
+            '#type' => 'textfield',
+            '#title' => 'Серия',
+            '#id' => 'form-book-release'
+        ];
+
         // hidden fiels //
 
-        $form['url'] = [
+        $form['input-url'] = [
             '#type' => 'textarea',
             '#title' => 'URL',
             '#placeholder' => 'https://example.com',
             '#required' => true,
             '#id' => 'form-book-url',
-            '#access' => $form_state->getValue('type-book') == 'electronic'
+            '#access' => $form_state->getValue('select-material') == 'electronic'
         ];
 
-        $form['date'] = [
+        $form['input-date'] = [
             '#type' => 'date',
             '#title' => 'Дата обращения',
             '#date_format' => 'd.m.Y',
             '#required' => true,
             '#id' => 'form-book-date',
-            '#access' => $form_state->getValue('type-book') === 'electronic'
+            '#access' => $form_state->getValue('select-material') === 'electronic'
         ];
 
-        $form['url-conatiner'] = [
+        $form['eversion-conatiner'] = [
             '#type' => 'container',
-            '#id' => 'edit-fields-book-url'
+            '#id' => 'edit-fields-book-e-version'
         ];
 
 
@@ -222,7 +268,7 @@ class BookForm extends FormBase
     {
         $form_state->setRebuild(true);
 
-        $title_val = $form_state->getValue('title');
+        $title_val = $form_state->getValue('input-title');
 
         if (\Drupal::currentUser()->isAuthenticated()) {
             $node = Node::create(['type' => 'article']);
