@@ -3,6 +3,10 @@
     max-height: 130px;
 }
 
+.journal-generate-form input[type='number'] {
+    min-width: 135px;
+}
+
 #result-journal-text {
     margin-top: 10px;
     min-height: 10px;

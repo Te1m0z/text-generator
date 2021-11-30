@@ -16,6 +16,7 @@
     })
 
     function getjournalStroke() {
+        let doi = $('#form-journal-doi').val()
         let author = $('#form-journal-author').val()
         let release = $('#form-journal-release').val()
         let name = $('#form-journal-name').val()
@@ -25,20 +26,23 @@
         let pagesFrom = $('#form-journal-pages-from').val()
         let pagesTo = $('#form-journal-pages-to').val()
         let other = $('#form-journal-other').val()
-        let lang = $('#form-journal-lang').val()
+        let url = $('#form-journal-url').val()
+        let date = $('#form-journal-date').val()
+        let lang = $('#form-journal-lang').val()    
+        let material = $('#form-journal-material').val()
 
-        let isRU = (lang === 'ru') ? true : false
+        let isRU = (lang === 'ru')
+        let isEVersion = (material === 'electronic')
 
-        let stroke = `${author}, "${release}", <i>${name}</i>, ${tomeNum}:${volume} (${year}), ${pagesFrom}-${pagesTo}. ${other}`
+        let stroke = `<i>${author}</i> ${release} // ${name}. ${year}. ${isRU ? "T" : "Vol"}. ${tomeNum}, № ${volume}. ${isRU ? "С" : "P"}. ${pagesFrom}-${pagesTo}.`
 
-        // if (tomeNum && tomeMax) {
-        //     stroke = `<i>${author}</i> ${name} : ${isRU ? 'в' : 'in'} ${tomeMax} ${isRU ? 'т' : 'v'}. ${isRU ? 'Т' : 'Vol'}. ${tomeNum}. ${city} : ${publish}, ${year}. ${pages} ${isRU ? 'с' : 'p'}.`
-        // }
+        if (isEVersion) {
+			stroke += ` URL: ${url} (${isRU ? 'дата обращения' : 'accessed'}: ${date}).`
+		}
 
-        // // если есть название тома
-        // if (tomeNum && tomeMax && tomeName) {
-        //     stroke = `<i>${author}</i> ${name} : ${isRU ? 'в' : 'in'} ${tomeMax} ${isRU ? 'т' : 'v'}. ${isRU ? 'Т' : 'Vol'}. ${tomeNum} : ${tomeName}. ${city} : ${publish}, ${year}. ${pages} ${isRU ? 'с' : 'p'}.`
-        // }
+        if (doi) stroke += ` ${doi}`;
+
+        if (other) stroke += ` ${other}`;
 
         return stroke
     }

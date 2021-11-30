@@ -20,8 +20,6 @@ class BookForm extends FormBase
     {
 
         $response = new AjaxResponse();
-        // $form['doi-check']['#markup'] = '<a target="_blank" href=' . 'https://doi.org/' . $form_state->getValue('input-doi') . '>Проверить DOI</a>';
-        // $form['doi-check']['#markup'] = $form_state->getValue('input-doi');
 
         $response->addCommand(new HtmlCommand('#form-book-check-doi', [
             '#markup' => '<a target="_blank" href=' . 'https://doi.org/' . $form_state->getValue('input-doi') . '>Проверить DOI</a>'
@@ -70,7 +68,7 @@ class BookForm extends FormBase
                 'method' => 'replace',
                 'effect' => 'fade'
             ],
-            '#id' => 'form-book-material'
+            '#id' => 'form-book-material',
         ];
 
         $form['select-language'] = [
@@ -80,7 +78,7 @@ class BookForm extends FormBase
                 'ru' => 'Русский',
                 'en' => 'Английский'
             ],
-            '#id' => 'form-book-lang'
+            '#id' => 'form-book-lang',
         ];
 
         $form['input-doi'] = [
@@ -95,13 +93,17 @@ class BookForm extends FormBase
                 'callback' => '::setDoiUrl',
                 'wrapper' => 'form-book-check-doi',
                 'method' => 'replace',
-            ]
+            ],
+            '#attributes' => [
+                ' type' => 'number'
+            ],
+            '#size' => 50
         ];
 
         $form['check-doi'] = [
             '#type' => 'item',
             '#id' => 'form-book-check-doi',
-            '#markup' => '<a href=' . $form_state->getValue('input-doi') . '>Проверить DOI</a>'
+            '#markup' => '<a target="_blank" href=' . $form_state->getValue('input-doi') . '>Проверить DOI</a>',
         ];
 
         $form['input-author'] = [
@@ -126,6 +128,8 @@ class BookForm extends FormBase
             '#type' => 'textfield',
             '#attributes' => [
                 ' type' => 'number',
+                ' min' => '1',
+                ' max' => '999'
             ],
             '#title' => 'Номер тома',
             '#placeholder' => '3',
@@ -137,6 +141,8 @@ class BookForm extends FormBase
             '#type' => 'textfield',
             '#attributes' => [
                 ' type' => 'number',
+                ' min' => '1',
+                ' max' => '999'
             ],
             '#title' => 'Всего томов',
             '#placeholder' => '5',
@@ -171,18 +177,23 @@ class BookForm extends FormBase
         $form['input-year'] = [
             '#type' => 'textfield',
             '#attributes' => [
-                ' type' => 'number'
+                ' type' => 'number',
+                ' min' => '1',
+                ' max' => date('Y')
             ],
             '#title' => 'Год издания',
             '#placeholder' => '2018',
             '#required' => true,
-            '#id' => 'form-book-year'
+            '#id' => 'form-book-year',
+            '#size' => 30
         ];
 
         $form['input-pages'] = [
             '#type' => 'textfield',
             '#attributes' => [
-                ' type' => 'number'
+                ' type' => 'number',
+                ' min' => '1',
+                ' max' => '99999'
             ],
             '#title' => 'Количество страниц',
             '#placeholder' => '240',
@@ -193,13 +204,14 @@ class BookForm extends FormBase
         $form['input-other'] = [
             '#type' => 'textarea',
             '#title' => 'Прочее',
-            '#id' => 'form-book-other'
+            '#id' => 'form-book-other',
+            '#rows' => 2
         ];
 
         $form['input-release'] = [
             '#type' => 'textfield',
             '#title' => 'Серия',
-            '#id' => 'form-book-release'
+            '#id' => 'form-book-release',
         ];
 
         // hidden fiels //
@@ -210,16 +222,20 @@ class BookForm extends FormBase
             '#placeholder' => 'https://example.com',
             '#required' => true,
             '#id' => 'form-book-url',
-            '#access' => $form_state->getValue('select-material') == 'electronic'
+            '#access' => $form_state->getValue('select-material') == 'electronic',
+            '#rows' => 2
         ];
 
         $form['input-date'] = [
             '#type' => 'date',
             '#title' => 'Дата обращения',
-            '#date_format' => 'd.m.Y',
             '#required' => true,
             '#id' => 'form-book-date',
-            '#access' => $form_state->getValue('select-material') === 'electronic'
+            '#access' => $form_state->getValue('select-material') === 'electronic',
+            '#attributes' => [
+                ' min' => '1900-01-01',
+                ' max' => date('Y-m-d'),
+            ]
         ];
 
         $form['eversion-conatiner'] = [
@@ -230,14 +246,10 @@ class BookForm extends FormBase
 
 
 
-
-
-
-
         $form['display_result'] = [
-            '#type' => 'submit',
+            '#type' => 'button',
             '#value' => 'Посмотреть результат',
-            '#id' => 'display-book-stroke-form-btn',
+            '#id' => 'display-book-stroke-form-btn'
         ];
 
         $form['result_text'] = [
@@ -251,6 +263,7 @@ class BookForm extends FormBase
             '#title' => 'Редактировать:',
             '#id' => 'form-book-result-input',
             '#rows' => '2',
+            '#description' => 'В "Мои списки" сохранится текст из поля "Редактировать"'
         ];
 
         $form['submit'] = [
@@ -267,7 +280,6 @@ class BookForm extends FormBase
     public function submitForm(array &$form, FormStateInterface $form_state)
     {
         $form_state->setRebuild(true);
-
         $title_val = $form_state->getValue('input-title');
 
         if (\Drupal::currentUser()->isAuthenticated()) {

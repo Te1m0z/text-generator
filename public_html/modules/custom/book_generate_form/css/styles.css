@@ -3,6 +3,10 @@
     max-height: 130px;
 }
 
+.book-generate-form input[type='number'] {
+    min-width: 135px;
+}
+
 #result-book-text {
     margin-top: 10px;
     min-height: 10px;

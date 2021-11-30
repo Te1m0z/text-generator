@@ -59,7 +59,7 @@
         }
 
         // если есть doi
-        if (doi) stroke += ` ${(/https:\/\/doi.org\//gi.test(doi) ? '' : 'https://doi.org/') + doi}`;
+        if (doi) stroke += ` ${doi}`;
 
         // прочее
         if (other) stroke += ` ${other}`;
