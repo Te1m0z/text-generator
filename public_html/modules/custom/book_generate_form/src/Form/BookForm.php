@@ -8,6 +8,7 @@ use Drupal\node\Entity\Node;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Ajax\AppendCommand;
 
 class BookForm extends FormBase
 {
@@ -28,6 +29,8 @@ class BookForm extends FormBase
     //     return $response;
     // }
 
+    protected $countAuthors = 1;
+
     public function checkEversion($form, FormStateInterface $form_state)
     {
         $response = new AjaxResponse();
@@ -45,6 +48,48 @@ class BookForm extends FormBase
 
         return $response;
     }
+
+    public function addNewAuthor(array $form, FormStateInterface $form_state)
+    {
+
+        $form['authors-container']['#count'] += 1;
+
+        $content = [
+            '#type' => 'container',
+            '#prefix' => 'Автор ' . $form['authors-container']['#count'],
+            '#children' => [
+                [
+                    '#type' => 'textfield',
+                    '#title' => 'Фамилия',
+                    '#required' => true,
+                    '#id' => 'form-book-author-' . $this->countAuthors .'-first-name',
+                ],
+                [
+                    '#type' => 'textfield',
+                    '#title' => 'Имя',
+                    '#required' => true,
+                    '#id' => 'form-book-author-' . $this->countAuthors++ . '-last-name',
+                ],
+                [
+                    '#type' => 'textfield',
+                    '#title' => 'Отчество',
+                    '#required' => false,
+                    '#id' => 'form-book-author-'  . $this->countAuthors++ . '-middle-name',
+                ],
+                [
+                    '#type' => 'button',
+                    '#value' => 'Удалить автора'
+                ]
+            ]
+        ];
+
+        $response = new AjaxResponse();
+
+        $response->addCommand(new AppendCommand('#authors-container', $content));
+
+        return $response;
+    }
+
 
     public function buildForm(array $form, FormStateInterface $form_state)
     {
@@ -83,12 +128,6 @@ class BookForm extends FormBase
             '#description' => 'Если есть, обязательно',
             '#required' => false,
             '#id' => 'form-book-doi',
-            // '#ajax' => [
-            //     'event' => 'change',
-            //     'callback' => '::setDoiUrl',
-            //     'wrapper' => 'form-book-check-doi',
-            //     'method' => 'replace',
-            // ],
             '#attributes' => [
                 ' type' => 'number'
             ]
@@ -96,26 +135,61 @@ class BookForm extends FormBase
 
         $form['check-doi'] = [
             '#type' => 'item',
-            '#id' => 'form-book-check-doi',
-            '#markup' => '<a target="_blank" href=' . $form_state->getValue('input-doi') . '>Проверить DOI</a>',
+            '#markup' => '<a target="_blank" href="https://doi.org/" id="form-book-check-doi">Проверить DOI</a>',
         ];
 
-        // $form['test'] = [
-        //     '#type' => 'container',
-        //     '#title' => 'Авторы',
-        //     'child' => [
-        //         [
-        //             '#type' => 'textfield',
-        //             '#title' => 'Автор 1',
-        //             '#required' => true,
-        //             '#id' => 'form-book-author',
-        //         ],
-        //         [
-        //             '#type' => 'button',
-        //             '#value' => 'Добавить автора'
-        //         ]
-        //     ]
-        // ];
+        $form['authors-container'] = [
+            '#type' => 'container',
+            '#id' => 'authors-container',
+            '#count' => 1,
+            '#children' => [
+                [
+                    '#type' => 'container',
+                    '#id' => 'first-author-item',
+                    '#prefix' => 'Автор 1',
+                    '#children' => [
+                        [
+                            '#type' => 'textfield',
+                            '#title' => 'Фамилия',
+                            '#required' => true,
+                            '#id' => 'form-book-author-1-first-name',
+                        ],
+                        [
+                            '#type' => 'textfield',
+                            '#title' => 'Имя',
+                            '#required' => true,
+                            '#id' => 'form-book-author-1-last-name',
+                        ],
+                        [
+                            '#type' => 'textfield',
+                            '#title' => 'Отчество',
+                            '#required' => false,
+                            '#id' => 'form-book-author-1-middle-name',
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        $form['add-new-author'] = [
+            '#type' => 'button',
+            '#value' => 'Добавить автора',
+            '#ajax' => [
+                'callback' => '::addNewAuthor',
+                'event' => 'click',
+                'effect' => 'fade',
+                'method' => 'replace',
+                'wrapper' => 'authors-container'
+            ],
+            // '#attributes' => [
+            //     ' type' => 'button'
+            // ],
+            // '#button_type' => 'button',
+            // '#is_button' => TRUE,
+            // '#attributes' => [' type' => 'button'],
+            // '#executes_submit_callback' => FALSE,
+            // '#limit_validation_errors' => FALSE,
+        ];
 
         $form['input-name'] = [
             '#type' => 'textarea',
@@ -237,7 +311,8 @@ class BookForm extends FormBase
             '#attributes' => [
                 ' min' => '1900-01-01',
                 ' max' => date('Y-m-d'),
-            ]
+            ],
+            '#default_value' => date('Y-m-d')
         ];
 
         $form['eversion-conatiner'] = [

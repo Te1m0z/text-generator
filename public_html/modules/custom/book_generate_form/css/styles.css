@@ -2,6 +2,10 @@
     font-size: 1rem;
 }
 
+#book-generate-form input[type='submit'], #book-generate-form input[type='button'] {
+    margin-left: 0 !important;
+}
+
 .book-generate-form textarea {
     max-width: 500px;
     max-height: 130px;
@@ -25,6 +29,6 @@
     margin-top: 40px !important;
 }
 
-/* .form-item {
-    margin: 0.7rem 0 0 0 !important;
-} */
+.authors-container-item {
+    padding-left: 30px;
+}
