@@ -31,10 +31,9 @@
         let url = $('#form-book-url').val()
         let date = $('#form-book-date').val()
         let lang = $('#form-book-lang').val()
-        let material = $('#form-book-material').val()
+        let isEVersion = $('#book-check-e-version').is(':checked')
 
         let isRU = (lang === 'ru')
-        let isEVersion = (material === 'electronic')
 
         let stroke = `<i>${author}</i> ${name}. ${city} : ${publish}, ${year}. ${pages} ${isRU ? 'с' : 'p'}.`
 

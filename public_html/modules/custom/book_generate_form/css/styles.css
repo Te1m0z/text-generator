@@ -1,3 +1,7 @@
+#book-generate-form {
+    font-size: 1rem;
+}
+
 .book-generate-form textarea {
     max-width: 500px;
     max-height: 130px;
@@ -17,10 +21,10 @@
     margin-top: 50px !important;
 }
 
-/* .form-item-result-text #result-text {
-    font-size: 20px;
-} */
-
-.form-item-title {
-    margin-bottom: 37px !important;
+.form-item-electronic-version {
+    margin-top: 40px !important;
 }
+
+/* .form-item {
+    margin: 0.7rem 0 0 0 !important;
+} */

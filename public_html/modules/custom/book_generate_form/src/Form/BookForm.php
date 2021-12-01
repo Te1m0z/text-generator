@@ -16,25 +16,25 @@ class BookForm extends FormBase
         return 'book-generate-form';
     }
 
-    function setDoiUrl($form, FormStateInterface $form_state)
-    {
+    // function setDoiUrl($form, FormStateInterface $form_state)
+    // {
 
-        $response = new AjaxResponse();
+    //     $response = new AjaxResponse();
 
-        $response->addCommand(new HtmlCommand('#form-book-check-doi', [
-            '#markup' => '<a target="_blank" href=' . 'https://doi.org/' . $form_state->getValue('input-doi') . '>Проверить DOI</a>'
-        ]));
+    //     $response->addCommand(new HtmlCommand('#form-book-check-doi', [
+    //         '#markup' => '<a target="_blank" href=' . 'https://doi.org/' . $form_state->getValue('input-doi') . '>Проверить DOI</a>'
+    //     ]));
 
-        return $response;
-    }
+    //     return $response;
+    // }
 
-    function returnAjax($form, FormStateInterface $form_state)
+    public function checkEversion($form, FormStateInterface $form_state)
     {
         $response = new AjaxResponse();
 
         $content = [];
 
-        if ($form_state->getValue('select-material') == 'electronic') {
+        if ($form_state->getValue('electronic-version') == true) {
             $content[] = $form['input-url'];
             $content[] = $form['input-date'];
         } else {
@@ -52,23 +52,18 @@ class BookForm extends FormBase
         $form['input-title'] = [
             '#type' => 'textfield',
             '#title' => 'Название списка (необязательно)',
-            '#placeholder' => 'Толстой. Война и мир'
+            '#placeholder' => 'Толстой. Война и мир',
+            '#access' => \Drupal::currentUser()->isAuthenticated() ? true : false
         ];
 
-        $form['select-material'] = [
-            '#type' => 'select',
-            '#title' => 'Тип материала',
-            '#options' => [
-                'book' => 'Книжный',
-                'electronic' => 'Электронный'
-            ],
+        $form['electronic-version'] = [
+            '#type' => 'checkbox',
+            '#title' => 'У меня есть электронная версия',
             '#ajax' => [
-                'callback' => '::returnAjax',
-                'wrapper' => 'edit-fields-book-e-version',
-                'method' => 'replace',
-                'effect' => 'fade'
+                'callback' => '::checkEversion',
+                'event' => 'change'
             ],
-            '#id' => 'form-book-material',
+            '#id' => 'book-check-e-version',
         ];
 
         $form['select-language'] = [
@@ -88,16 +83,15 @@ class BookForm extends FormBase
             '#description' => 'Если есть, обязательно',
             '#required' => false,
             '#id' => 'form-book-doi',
-            '#ajax' => [
-                'event' => 'input',
-                'callback' => '::setDoiUrl',
-                'wrapper' => 'form-book-check-doi',
-                'method' => 'replace',
-            ],
+            // '#ajax' => [
+            //     'event' => 'change',
+            //     'callback' => '::setDoiUrl',
+            //     'wrapper' => 'form-book-check-doi',
+            //     'method' => 'replace',
+            // ],
             '#attributes' => [
                 ' type' => 'number'
-            ],
-            '#size' => 50
+            ]
         ];
 
         $form['check-doi'] = [
@@ -106,14 +100,22 @@ class BookForm extends FormBase
             '#markup' => '<a target="_blank" href=' . $form_state->getValue('input-doi') . '>Проверить DOI</a>',
         ];
 
-        $form['input-author'] = [
-            '#type' => 'textarea',
-            '#title' => 'Автор(ы)',
-            '#placeholder' => 'Иванов И. И.',
-            '#required' => true,
-            '#id' => 'form-book-author',
-            '#rows' => '2'
-        ];
+        // $form['test'] = [
+        //     '#type' => 'container',
+        //     '#title' => 'Авторы',
+        //     'child' => [
+        //         [
+        //             '#type' => 'textfield',
+        //             '#title' => 'Автор 1',
+        //             '#required' => true,
+        //             '#id' => 'form-book-author',
+        //         ],
+        //         [
+        //             '#type' => 'button',
+        //             '#value' => 'Добавить автора'
+        //         ]
+        //     ]
+        // ];
 
         $form['input-name'] = [
             '#type' => 'textarea',
@@ -222,7 +224,7 @@ class BookForm extends FormBase
             '#placeholder' => 'https://example.com',
             '#required' => true,
             '#id' => 'form-book-url',
-            '#access' => $form_state->getValue('select-material') == 'electronic',
+            '#access' => $form_state->getValue('electronic-version') == true,
             '#rows' => 2
         ];
 
@@ -231,7 +233,7 @@ class BookForm extends FormBase
             '#title' => 'Дата обращения',
             '#required' => true,
             '#id' => 'form-book-date',
-            '#access' => $form_state->getValue('select-material') === 'electronic',
+            '#access' => $form_state->getValue('electronic-version') == true,
             '#attributes' => [
                 ' min' => '1900-01-01',
                 ' max' => date('Y-m-d'),
@@ -247,9 +249,10 @@ class BookForm extends FormBase
 
 
         $form['display_result'] = [
-            '#type' => 'button',
+            '#type' => 'submit',
             '#value' => 'Посмотреть результат',
-            '#id' => 'display-book-stroke-form-btn'
+            '#id' => 'display-book-stroke-form-btn',
+            '#name' => 'display-result',
         ];
 
         $form['result_text'] = [
