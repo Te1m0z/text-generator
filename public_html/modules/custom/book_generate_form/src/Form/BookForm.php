@@ -92,10 +92,30 @@ class BookForm extends FormBase
             '#suffix' => '</div>',
         ];
 
-        for ($i = 0; $i < $num_names; $i++) {
-            $form['names_fieldset']['name'][$i] = [
+        for ($i = 1; $i <= $num_names; $i++) {
+            $form['names_fieldset_name'] = [
                 '#type' => 'textfield',
-                '#title' => 'Author ' . $i
+                '#title' => 'Text',
+                '#required' => TRUE
+                // '#type' => 'container',
+                // // '#prefix' => 'Автор ' . $i,
+                // '#children' => [
+                //     [
+                //         '#type' => 'textfield',
+                //         '#title' => 'Имя',
+                //         '#required' => TRUE
+                //     ],
+                //     [
+                //         '#type' => 'textfield',
+                //         '#title' => 'Фамилия',
+                //         '#required' => TRUE
+                //     ],
+                //     [
+                //         '#type' => 'textfield',
+                //         '#title' => 'Отчество',
+                //         '#required' => FALSE
+                //     ]
+                // ]
             ];
         }
 
@@ -108,11 +128,10 @@ class BookForm extends FormBase
             '#value' => 'Add one more',
             '#submit' => ['::addOne'],
             '#ajax' => [
-                'callback' => [$this, 'addmoreCallback'],
+                'callback' => '::addmoreCallback',
                 'wrapper' => 'names-fieldset-wrapper',
-                // 'effect' => 'fade'
             ],
-            // '#limit_validation_errors' => []
+            '#limit_validation_errors' => [['names_fieldset_name']]
         ];
 
         // Если существует более одного имени, добавьте кнопку удаления.
@@ -125,7 +144,7 @@ class BookForm extends FormBase
                     'callback' => '::addmoreCallback',
                     'wrapper' => 'names-fieldset-wrapper',
                 ],
-                // '#limit_validation_errors' => []
+                '#limit_validation_errors' => []
             ];
         }
 
@@ -323,6 +342,7 @@ class BookForm extends FormBase
 
     public function addmoreCallback(array &$form, FormStateInterface $form_state)
     {
+        // $form_state->setRebuild(TRUE);
         return $form['names_fieldset'];
     }
 
@@ -331,7 +351,7 @@ class BookForm extends FormBase
         $name_field = $form_state->get('num_names');
         $add_button = $name_field + 1;
         $form_state->set('num_names', $add_button);
-        $form_state->setRebuild(true);
+        $form_state->setRebuild();
     }
 
     public function removeCallback(array &$form, FormStateInterface $form_state)
@@ -349,15 +369,6 @@ class BookForm extends FormBase
 
     public function submitForm(array &$form, FormStateInterface $form_state)
     {
-
-        // $values = $form_state->getValue(['names_fieldset', 'name']);
-
-        // $output = $this->t(
-        //     'These people are coming to the picnic: @names',
-        //     [
-        //         '@names' => implode(', ', $values),
-        //     ]
-        // );
         $this->messenger()->addMessage('dada');
 
 
