@@ -342,6 +342,7 @@ class BookForm extends FormBase
 
     public function addmoreCallback(array &$form, FormStateInterface $form_state)
     {
+        // $form_state->setRebuild(TRUE);
         return $form['names_fieldset'];
     }
 
