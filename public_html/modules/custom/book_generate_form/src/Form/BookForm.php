@@ -12,24 +12,6 @@ use Drupal\Core\Ajax\HtmlCommand;
 class BookForm extends FormBase
 {
 
-    public function checkEversion($form, FormStateInterface $form_state)
-    {
-        $response = new AjaxResponse();
-
-        $content = [];
-
-        if ($form_state->getValue('electronic-version') == true) {
-            $content[] = $form['input-url'];
-            $content[] = $form['input-date'];
-        } else {
-            $content = null;
-        }
-
-        $response->addCommand(new HtmlCommand('#edit-fields-book-e-version', $content));
-
-        return $response;
-    }
-
     public function buildForm(array $form, FormStateInterface $form_state)
     {
 
@@ -43,44 +25,52 @@ class BookForm extends FormBase
         $form['electronic-version'] = [
             '#type' => 'checkbox',
             '#title' => 'У меня есть электронная версия',
+            // '#submit' => ['::changeEversion'],
             '#ajax' => [
-                'callback' => '::checkEversion',
-                'event' => 'change'
+                'callback' => '::changeEversion',
+                'event' => 'change',
+                'wrapper' => 'electronic-fieldset-wrapper'
             ],
             '#id' => 'book-check-e-version',
         ];
 
-        $form['select-language'] = [
-            '#type' => 'select',
-            '#title' => 'Язык издания',
-            '#options' => [
-                'ru' => 'Русский',
-                'en' => 'Английский'
-            ],
-            '#id' => 'form-book-lang',
-        ];
+        // $form['select-language'] = [
+        //     '#type' => 'select',
+        //     '#title' => 'Язык издания',
+        //     '#options' => [
+        //         'ru' => 'Русский',
+        //         'en' => 'Английский'
+        //     ],
+        //     '#id' => 'form-book-lang',
+        // ];
 
-        $form['input-doi'] = [
-            '#type' => 'textfield',
-            '#title' => 'DOI (просто номер, без https...)',
-            '#placeholder' => '12345',
-            '#description' => 'Если есть, обязательно',
-            '#id' => 'form-book-doi',
-            '#attributes' => [
-                ' type' => 'number'
-            ]
-        ];
+        // $form['input-doi'] = [
+        //     '#type' => 'textfield',
+        //     '#title' => 'DOI (просто номер, без https...)',
+        //     '#placeholder' => '12345',
+        //     '#description' => 'Если есть, обязательно',
+        //     '#id' => 'form-book-doi',
+        //     '#attributes' => [
+        //         ' type' => 'number'
+        //     ]
+        // ];
 
-        $form['check-doi'] = [
-            '#type' => 'item',
-            '#markup' => '<a id="form-book-check-doi" target="_blank" href="https://doi.org/">Проверить DOI</a>',
-        ];
+        // $form['check-doi'] = [
+        //     '#type' => 'item',
+        //     '#markup' => '<a id="form-book-check-doi" target="_blank" href="https://doi.org/">Проверить DOI</a>',
+        // ];
 
         $num_names = $form_state->get('num_names'); // NULL
+        $e_version = $form_state->get('electronic');
 
         if ($num_names === NULL) {
             $num_names = $form_state->set('num_names', 1);
             $num_names = 1;
+        }
+
+        if ($e_version === NULL) {
+            $e_version = $form_state->set('electronic', false);
+            $e_version = false;
         }
 
         $form['#tree'] = TRUE;
@@ -89,27 +79,36 @@ class BookForm extends FormBase
             '#type' => 'fieldset',
             '#prefix' => '<div id="names-fieldset-wrapper">',
             '#suffix' => '</div>',
+            '#title' => 'Автор(ы)'
         ];
 
         for ($i = 1; $i <= $num_names; $i++) {
 
-            $form['names_fieldset']['author_first_name_' . $i] = [
+            $form['names_fieldset']['author_set_' . $i] = [
+                '#type' => 'fieldset',
+                '#title' => 'Автор ' . $i,
+                '#attributes' => [' class' => 'author_set_item']
+            ];
+
+            $form['names_fieldset']['author_set_' . $i]['author_first_name_' . $i] = [
                 '#type' => 'textfield',
                 '#title' => 'Имя',
                 '#required' => TRUE,
-                '#prefix' => 'Автор ' . $i
+                '#id' => 'author_first_name_' . $i,
             ];
 
-            $form['names_fieldset']['author_last_name_' . $i] = [
+            $form['names_fieldset']['author_set_' . $i]['author_last_name_' . $i] = [
                 '#type' => 'textfield',
                 '#title' => 'Фамилия',
                 '#required' => TRUE,
+                '#id' => 'author_last_name_' . $i,
             ];
 
-            $form['names_fieldset']['author_middle_name_' . $i] = [
+            $form['names_fieldset']['author_set_' . $i]['author_middle_name_' . $i] = [
                 '#type' => 'textfield',
                 '#title' => 'Отчество',
-                '#required' => FALSE
+                '#required' => FALSE,
+                '#id' => 'author_middle_name_' . $i,
             ];
         }
 
@@ -219,7 +218,7 @@ class BookForm extends FormBase
             '#size' => 30
         ];
 
-        $form['input-pages'] = [
+        $form['input']['input-pages'] = [
             '#type' => 'textfield',
             '#attributes' => [
                 ' type' => 'number',
@@ -232,57 +231,59 @@ class BookForm extends FormBase
             '#id' => 'form-book-pages'
         ];
 
-        $form['input-other'] = [
+        $form['input']['input-other'] = [
             '#type' => 'textarea',
             '#title' => 'Прочее',
             '#id' => 'form-book-other',
             '#rows' => 2
         ];
 
-        $form['input-release'] = [
+        $form['input']['input-release'] = [
             '#type' => 'textfield',
             '#title' => 'Серия',
             '#id' => 'form-book-release',
         ];
 
-        // hidden fiels
 
-        $form['input-url'] = [
-            '#type' => 'textarea',
-            '#title' => 'URL',
-            '#placeholder' => 'https://example.com',
-            '#required' => true,
-            '#id' => 'form-book-url',
-            '#access' => $form_state->getValue('electronic-version') == true,
-            '#rows' => 2
+        $form['electronic_fieldset'] = [
+            '#type' => 'fieldset',
+            '#prefix' => '<div id="electronic-fieldset-wrapper">',
+            '#suffix' => '</div>',
         ];
 
-        $form['input-date'] = [
-            '#type' => 'date',
-            '#title' => 'Дата обращения',
-            '#required' => true,
-            '#id' => 'form-book-date',
-            '#access' => $form_state->getValue('electronic-version') == true,
-            '#attributes' => [
-                ' min' => '1900-01-01',
-                ' max' => date('Y-m-d'),
-            ],
-            '#default_value' => date('Y-m-d')
-        ];
+        if ($form_state->get('electronic')) {
+            $form['electronic_fieldset']['url'] = [
+                '#type' => 'textarea',
+                '#title' => 'URL',
+                '#placeholder' => 'https://example.com',
+                '#required' => true,
+                '#id' => 'form-book-url',
+                '#rows' => 2
+            ];
 
-        $form['eversion-conatiner'] = [
-            '#type' => 'container',
-            '#id' => 'edit-fields-book-e-version'
-        ];
-
-
-
+            $form['electronic_fieldset']['date'] = [
+                '#type' => 'date',
+                '#title' => 'Дата обращения',
+                '#required' => true,
+                '#id' => 'form-book-date',
+                '#attributes' => [
+                    ' min' => '1900-01-01',
+                    ' max' => date('Y-m-d'),
+                ],
+                '#default_value' => date('Y-m-d')
+            ];
+        }
 
         $form['actions']['display_result'] = [
-            '#type' => 'submit',
+            '#type' => 'button',
             '#value' => 'Посмотреть результат',
-            '#id' => 'display-book-stroke-form-btn',
-            '#name' => 'display-result',
+            // '#id' => 'display-book-stroke-form-btn',
+            // '#submit' => ['::updateForm'],
+            '#limit_validation_error' => [
+                [
+                    'input'
+                ]
+            ]
         ];
 
         $form['result_text'] = [
@@ -341,7 +342,6 @@ class BookForm extends FormBase
 
     public function addmoreCallback(array &$form, FormStateInterface $form_state)
     {
-        // $form_state->setRebuild(TRUE);
         return $form['names_fieldset'];
     }
 
@@ -360,10 +360,21 @@ class BookForm extends FormBase
             $remove_button = $name_field - 1;
             $form_state->set('num_names', $remove_button);
         }
-        // Поскольку наш метод buildForm() полагается на значение 'num_names' для
-        // генерировать элементы формы 'name', мы должны сказать форме перестроиться. Если мы
-        // этого не сделать, построитель формы не вызовет buildForm().
         $form_state->setRebuild();
+    }
+
+    public function checkEversion($form, FormStateInterface $form_state)
+    {
+        $form_state->set('electronic', true);
+
+        $form_state->setRebuild();
+        // return $form['electronic_fieldset'];
+    }
+
+    public function updateForm($form, FormStateInterface $form_state)
+    {
+        $form_state->setRebuild();
+        return $form;
     }
 
     public function submitForm(array &$form, FormStateInterface $form_state)

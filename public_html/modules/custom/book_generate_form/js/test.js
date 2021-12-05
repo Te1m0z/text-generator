@@ -28,8 +28,23 @@
     })
 
     function getBookStroke() {
+
+        let count_authors = $('.author_set_item') // 2
+        let authors_arr = []
+
+        count_authors.each(function (idx) {
+            idx += 1
+            let arr_item = [] // [имя, фамилия, отчество]
+            arr_item.push($(this).find('#author_first_name_' + idx).val())
+            arr_item.push($(this).find('#author_last_name_' + idx).val())
+            arr_item.push($(this).find('#author_middle_name_' + idx).val())
+            authors_arr.push(arr_item)
+        })
+
+        console.log(authors_arr)
+
         let doi = $('#form-book-doi').val()
-        let author = $('#form-book-author').val()
+        // let author = ''
         let name = $('#form-book-name').val()
         let tomeNum = $('#form-book-tome-num').val()
         let tomeMax = $('#form-book-tome-max').val()
@@ -44,6 +59,17 @@
         let date = $('#form-book-date').val()
         let lang = $('#form-book-lang').val()
         let isEVersion = $('#book-check-e-version').is(':checked')
+
+        let author = ''
+
+        $.each(authors_arr, function (idx, item) {
+            console.log(idx, item)
+            author += item[1] + ' ' + item[0][0] + '.'
+
+            if (item[2][0]) {
+                author += ' ' + item[2][0] + '.'
+            }
+        })
 
         let isRU = (lang === 'ru')
 
