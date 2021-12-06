@@ -9,19 +9,23 @@
         //     event.preventDefault()
         // })
 
+        // $('#book-generate-form').on('change', function(event) {
+        //     console.log(111, event)
+        // })
+
         $('#display-book-stroke-form-btn').click(function () {
 
             console.log($('#inputs-container-wrapper').attr('data-valid'))
 
-            if ($('#inputs-container-wrapper').attr('data-valid') === 'true') {
+            // if ($('#inputs-container-wrapper').attr('data-valid') === 'true') {
 
-                console.log('da!!!')
+            //     console.log('da!!!')
 
                 let str = getBookStroke()
 
-                $('#form-book-result-input').val(str)
-                $('#result-book-text').html(str)
-            }
+            //     $('#form-book-result-input').val(str)
+            //     $('#result-book-text').html(str)
+            // }
         })
 
         $('#form-book-result-input').on('input', function (event) {
