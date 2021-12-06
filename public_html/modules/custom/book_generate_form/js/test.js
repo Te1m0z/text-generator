@@ -1,25 +1,27 @@
 (function ($) {
     $(document).ready(function () {
 
-        // $('#add-name-btn').click(function (event) {
-        //     event.preventDefault()
-        // })
-
         $('#form-book-doi').on('input', function (event) {
             $('#form-book-check-doi').attr('href', 'https://doi.org/' + event.target.value)
         })
 
-        $('#edit-add-new-author').click(function (event) {
-            event.preventDefault()
-        })
+        // $('#edit-add-new-author').click(function (event) {
+        //     event.preventDefault()
+        // })
 
-        $('#display-book-stroke-form-btn').click(function (event) {
-            event.preventDefault()
+        $('#display-book-stroke-form-btn').click(function () {
 
-            let str = getBookStroke()
+            console.log($('#inputs-container-wrapper').attr('data-valid'))
 
-            $('#form-book-result-input').val(str)
-            $('#result-book-text').html(str)
+            if ($('#inputs-container-wrapper').attr('data-valid') === 'true') {
+
+                console.log('da!!!')
+
+                let str = getBookStroke()
+
+                $('#form-book-result-input').val(str)
+                $('#result-book-text').html(str)
+            }
         })
 
         $('#form-book-result-input').on('input', function (event) {
