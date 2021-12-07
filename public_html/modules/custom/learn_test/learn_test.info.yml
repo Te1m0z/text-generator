@@ -1,0 +1,5 @@
+name: 'Learn Test Module'
+description: none
+type: module
+package: custom
+core_version_requirement: ^9
