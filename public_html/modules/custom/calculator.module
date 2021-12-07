@@ -1,0 +1,8 @@
+<?php
+
+function hook_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id)
+{
+  if ($form_id == 'calculator-module-form') {
+    $form['result']['#markup'] = 'this works!';
+  }
+}

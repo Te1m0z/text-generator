@@ -1,0 +1,7 @@
+calculator.main:
+  path: '/calculator'
+  defaults:
+    _form: '\Drupal\calculator\Form\CalculatorForm'
+    _title: 'Калькулятор 2122'
+  requirements:
+    _permission: 'access content'
