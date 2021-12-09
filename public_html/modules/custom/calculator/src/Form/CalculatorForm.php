@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 
 class CalculatorForm extends FormBase
 {
+
   public function getFormId()
   {
     return 'calculator-module-form';
@@ -73,11 +74,11 @@ class CalculatorForm extends FormBase
 
   public function setNumberCallBack(array &$form, FormStateInterface $form_state)
   {
-    $old_val = $form_state->get('result_str');
-    $new_val = $old_val . $form_state->getTriggeringElement()['#value'];
-    dpm($new_val);
-    $form_state->set('result_str', $new_val);
-    $form['result']['#markup'] = $old_val . $form_state->getTriggeringElement()['#value'];
+//    $old_val = $form_state->get('result_str');
+//    $new_val = $old_val . $form_state->getTriggeringElement()['#value'];
+//    dpm($new_val);
+//    $form_state->set('result_str', $new_val);
+    $form['result']['#markup'] .= $form_state->getTriggeringElement()['#value'];
 //    $form_state->setRebuild(TRUE);
 
     return $form['result'];
