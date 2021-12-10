@@ -1,5 +1,9 @@
-#book-generate-form {
-    font-size: 1rem;
+/*#book-generate-form {*/
+/*    font-size: 1rem;*/
+/*}*/
+
+#edit-container-names-fieldset {
+  display: inline-block !important;
 }
 
 #book-generate-form input[type='submit'], #book-generate-form input[type='button'] {

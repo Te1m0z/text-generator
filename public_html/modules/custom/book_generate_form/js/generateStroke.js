@@ -2,12 +2,12 @@
   $(document).ready(function () {
 
     let str = getBookStroke()
-    $('#form-book-result-input').val(str)
+    // $('#form-book-result-input').val(str)
     $('#result-book-text').html(str)
 
-    $('#form-book-result-input').on('input', function (event) {
-      $('#result-book-text').html(event.target.value)
-    })
+    // $('#form-book-result-input').on('input', function (event) {
+    //   $('#result-book-text').html(event.target.value)
+    // })
   })
 
   function getBookStroke() {

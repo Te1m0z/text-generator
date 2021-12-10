@@ -24,7 +24,7 @@ class BookForm extends FormBase
       '#type' => 'textfield',
       '#title' => 'Название списка (необязательно)',
       '#placeholder' => 'Толстой. Война и мир',
-      '#access' => TRUE
+      '#access' => \Drupal::currentUser()->isAuthenticated()
     ];
 
     $form['container']['eversion'] = [
@@ -291,15 +291,16 @@ class BookForm extends FormBase
       '#markup' => '<div id="result-book-text"></div>',
     ];
 
-    $form['container']['result_input'] = [
-      '#type' => 'textarea',
-      '#title' => 'Редактировать:',
-      '#id' => 'form-book-result-input',
-      '#rows' => '2',
-    ];
+//    $form['container']['result_input'] = [
+//      '#type' => 'textarea',
+//      '#title' => 'Редактировать:',
+//      '#id' => 'form-book-result-input',
+//      '#rows' => '2',
+//    ];
 
-    $form['#attached']['library'][] = $form_state->get('lib');
+    $form['#attached']['library'][] = 'book_generate_form/main';
     $form['#attached']['library'][] = 'book_generate_form/doi';
+    $form['#attached']['library'][] = $form_state->get('lib');
 
     $form['submit'] = [
       '#type' => 'submit',
@@ -313,7 +314,7 @@ class BookForm extends FormBase
   {
     $name_field = $form_state->get('num_names');
     $form_state->set('num_names', $name_field + 1);
-    $form_state->setRebuild(TRUE);
+    return $form_state->setRebuild(TRUE);
   }
 
   public function removeAuthorCallback(array &$form, FormStateInterface $form_state)
@@ -357,8 +358,9 @@ class BookForm extends FormBase
 
     //     $this->messenger()->addMessage('Книга успешно сохранина!');
     // } else {
-    //     $response = new RedirectResponse('/user/login', 301);
-    //     $response->send();
+         \Drupal\redirect\Entity\Redirect::create([
+           'redi'
+         ])
     // }
   }
 }

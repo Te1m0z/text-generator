@@ -1,11 +1,7 @@
-book_generate_form:
-  js:
-    js/test.js: {}
+main:
   css:
     module:
       css/styles.css: {}
-  dependencies:
-    - core/jquery
 generate_str:
   js:
     js/generateStroke.js: {}
