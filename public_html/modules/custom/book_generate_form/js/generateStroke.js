@@ -1,17 +1,11 @@
 (function ($) {
   $(document).ready(function () {
-
     let str = getBookStroke()
-    // $('#form-book-result-input').val(str)
     $('#result-book-text').html(str)
-
-    // $('#form-book-result-input').on('input', function (event) {
-    //   $('#result-book-text').html(event.target.value)
-    // })
+    $('#result-book-text').val(str)
   })
 
   function getBookStroke() {
-
     let count_authors = $('.author_set_item') // 2
     let authors_arr = []
 
@@ -53,7 +47,7 @@
         author += ' ' + item[2][0] + '.'
       }
       idx++
-      if(authors_arr.length > 1) {
+      if (authors_arr.length > 1) {
         if (idx !== authors_arr.length) {
           author += ', '
           console.log(idx, authors_arr.length, 'добавлена , ')
