@@ -4,6 +4,7 @@ namespace Drupal\book_generate_form\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\Entity\Node;
 
 class BookForm extends FormBase
 {
@@ -298,6 +299,14 @@ class BookForm extends FormBase
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => 'Сохранить список',
+      '#suffix' => 'Чтобы сохранить список, сначала нажмите "Посмотреть результат"',
+      '#disabled' => boolval(!$form_state->get('is_submit_btn_enabled'))
+    ];
+
+    $form['note'] = [
+      '#type' => 'item',
+      '#markup' => 'Сохранять списки могут только авторизованные пользователи. <a href="/user/login">Войти</a>',
+      '#access' => boolval($form_state->get('is_display_note'))
     ];
 
     $form['note'] = [
@@ -335,25 +344,27 @@ class BookForm extends FormBase
   public function allowDisplayStroke($form, FormStateInterface $form_state)
   {
     $form_state->set('lib', 'book_generate_form/generate_str');
+    $form_state->set('is_submit_btn_enabled', TRUE);
     $form_state->setRebuild(TRUE);
   }
 
   public function submitForm(array &$form, FormStateInterface $form_state)
   {
-     $title_val = $form_state->getValue('input-title');
-
     if (\Drupal::currentUser()->isAuthenticated()) {
-      $node = Node::create(['type' => 'article']);
-      $node->setTitle($title_val !== '' ? $title_val : 'Список без заголовка');
-      $node->body->value = $form_state->getValue('result_input');
-      $node->body->format = 'full_html';
-      $node->field_type->value = 'Книга';
-      $node->setPublished(true);
-      $node->save();
-      $this->messenger()->addMessage('Книга успешно сохранина!');
+      // dpm($form_state->getValue($form_state->getValue("['container']['eversion_container']['remove_btn'][op]")));
+      // $title_val = $form_state->getValue($form['container']['title']);
+      // $node = Node::create(['type' => 'article']);
+      //   $node->setTitle($title_val !== '' ? $title_val : 'Список без заголовка');
+      //   $node->body->value = $form_state->getValue($form['container']['result_text']);
+      //   $node->body->format = 'full_html';
+      //   $node->field_type->value = 'Книга';
+      //   $node->setPublished(true);
+      //   $node->save();
+      //   $this->messenger()->addMessage('Книга успешно сохранина!');
     } else {
-      $form_state->set('is_display_note', true);
-      $form_state->setRebuild(TRUE);
+      $form_state->set('is_display_note', TRUE);
     }
+
+    $form_state->setRebuild();
   }
 }

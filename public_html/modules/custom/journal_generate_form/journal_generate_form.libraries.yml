@@ -1,9 +1,14 @@
-journal_generate_form:
-  version: 1.0
-  js:
-    js/script.js: {}
+main:
   css:
     module:
       css/styles.css: {}
+generate_str:
+  js:
+    js/generateStroke.js: {}
+  dependencies:
+    - core/jquery
+doi:
+  js:
+    js/doi.js: {}
   dependencies:
     - core/jquery
