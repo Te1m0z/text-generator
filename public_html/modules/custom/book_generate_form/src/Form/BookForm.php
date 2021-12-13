@@ -6,6 +6,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 
+
 class BookForm extends FormBase
 {
   public function getFormId()
@@ -21,11 +22,11 @@ class BookForm extends FormBase
       '#id' => 'inputs-container-wrapper'
     ];
 
-    $form['container']['title'] = [
+    $form['container']['title-article'] = [
       '#type' => 'textfield',
       '#title' => 'Название списка (необязательно)',
       '#placeholder' => 'Толстой. Война и мир',
-      '#access' => \Drupal::currentUser()->isAuthenticated()
+      '#access' => \Drupal::currentUser()->isAuthenticated(),
     ];
 
     $form['container']['eversion'] = [
@@ -33,7 +34,7 @@ class BookForm extends FormBase
       '#value' => 'У меня есть электронная версия',
       '#submit' => ['::updateEversion'],
       '#limit_validation_errors' => [],
-      '#disabled' => $form_state->get('electronic')
+      '#disabled' => boolval($form_state->get('electronic'))
     ];
 
     $form['container']['language'] = [
@@ -292,6 +293,14 @@ class BookForm extends FormBase
       '#markup' => '<div id="result-book-text"></div>',
     ];
 
+    $form['hidden_result_stroke'] = [
+      '#type' => 'textfield',
+      '#id' => 'result-book-text-hidden',
+      '#attributes' => [
+        ' hidden' => 'true'
+      ]
+    ];
+
     $form['#attached']['library'][] = 'book_generate_form/main';
     $form['#attached']['library'][] = 'book_generate_form/doi';
     $form['#attached']['library'][] = $form_state->get('lib');
@@ -305,13 +314,7 @@ class BookForm extends FormBase
 
     $form['note'] = [
       '#type' => 'item',
-      '#markup' => 'Сохранять списки могут только авторизованные пользователи. <a href="/user/login">Войти</a>',
-      '#access' => boolval($form_state->get('is_display_note'))
-    ];
-
-    $form['note'] = [
-      '#type' => 'item',
-      '#markup' => 'Нужно сначала <a href="/user/login">зарегаться</a>',
+      '#markup' => 'Нужно сначала <a href="/user/login">Войти</a>',
       '#access' => boolval($form_state->get('is_display_note'))
     ];
 
@@ -350,17 +353,16 @@ class BookForm extends FormBase
 
   public function submitForm(array &$form, FormStateInterface $form_state)
   {
+
     if (\Drupal::currentUser()->isAuthenticated()) {
-      // dpm($form_state->getValue($form_state->getValue("['container']['eversion_container']['remove_btn'][op]")));
-      // $title_val = $form_state->getValue($form['container']['title']);
-      // $node = Node::create(['type' => 'article']);
-      //   $node->setTitle($title_val !== '' ? $title_val : 'Список без заголовка');
-      //   $node->body->value = $form_state->getValue($form['container']['result_text']);
-      //   $node->body->format = 'full_html';
-      //   $node->field_type->value = 'Книга';
-      //   $node->setPublished(true);
-      //   $node->save();
-      //   $this->messenger()->addMessage('Книга успешно сохранина!');
+      $node = Node::create(['type' => 'article']);
+      $node->setTitle($form_state->getValue(array('container', 'title-article'), 'Список без заголовка'));
+      $node->body->value = $form_state->getValue('hidden_result_stroke');
+      $node->body->format = 'basic_html';
+      $node->field_type->value = 'Книга';
+      $node->setPublished(true);
+      $node->save();
+      $this->messenger()->addMessage('Книга успешно сохранина!');
     } else {
       $form_state->set('is_display_note', TRUE);
     }

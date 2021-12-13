@@ -5,9 +5,7 @@ namespace Drupal\journal_generate_form\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\HtmlCommand;
+
 
 class JournalForm extends FormBase
 {
@@ -16,64 +14,30 @@ class JournalForm extends FormBase
         return 'journal-generate-form';
     }
 
-    function setDoiUrl($form, FormStateInterface $form_state)
-    {
-
-        $response = new AjaxResponse();
-
-        $response->addCommand(new HtmlCommand('#form-journal-check-doi', [
-            '#markup' => '<a target="_blank" href=' .
-            'https://doi.org/' .
-            $form_state->getValue('input-doi') . '>Проверить DOI</a>',
-        ]));
-
-        return $response;
-    }
-
-    function returnAjax($form, FormStateInterface $form_state)
-    {
-        $response = new AjaxResponse();
-
-        $content = [];
-
-        if ($form_state->getValue('select-material') == 'electronic') {
-            $content[] = $form['input-url'];
-            $content[] = $form['input-date'];
-        } else {
-            $content = null;
-        }
-
-        $response->addCommand(new HtmlCommand('#edit-fields-journal-e-version', $content));
-
-        return $response;
-    }
-
     public function buildForm(array $form, FormStateInterface $form_state)
     {
 
-        $form['input-title'] = [
+        $form['container'] = [
+            '#type' => 'container',
+            '#id' => 'inputs-container-wrapper'
+        ];
+
+        $form['container']['title-article'] = [
             '#type' => 'textfield',
             '#title' => 'Название списка (необязательно)',
-            '#placeholder' => 'Толстой. Война и мир'
+            '#placeholder' => 'Это статья из журнала',
+            '#access' => \Drupal::currentUser()->isAuthenticated(),
         ];
 
-        $form['select-material'] = [
-            '#type' => 'select',
-            '#title' => 'Тип материала',
-            '#options' => [
-                'book' => 'Книжный',
-                'electronic' => 'Электронный'
-            ],
-            '#ajax' => [
-                'callback' => '::returnAjax',
-                'wrapper' => 'edit-fields-journal-e-version',
-                'method' => 'replace',
-                'effect' => 'fade'
-            ],
-            '#id' => 'form-journal-material',
+        $form['container']['eversion'] = [
+            '#type' => 'submit',
+            '#value' => 'У меня есть электронная версия',
+            '#submit' => ['::updateEversion'],
+            '#limit_validation_errors' => [],
+            '#disabled' => boolval($form_state->get('electronic'))
         ];
 
-        $form['select-language'] = [
+        $form['container']['language'] = [
             '#type' => 'select',
             '#title' => 'Язык издания',
             '#options' => [
@@ -83,41 +47,93 @@ class JournalForm extends FormBase
             '#id' => 'form-journal-lang',
         ];
 
-        $form['input-doi'] = [
+        $form['container']['doi'] = [
             '#type' => 'textfield',
             '#title' => 'DOI (просто номер, без https...)',
             '#placeholder' => '12345',
             '#description' => 'Если есть, обязательно',
-            '#required' => false,
             '#id' => 'form-journal-doi',
-            '#ajax' => [
-                'event' => 'input',
-                'callback' => '::setDoiUrl',
-                'wrapper' => 'form-journal-check-doi',
-                'method' => 'replace',
-            ],
             '#attributes' => [
                 ' type' => 'number'
-            ],
-            '#size' => 50
+            ]
         ];
 
-        $form['check-doi'] = [
+        $form['container']['check-doi'] = [
             '#type' => 'item',
-            '#id' => 'form-journal-check-doi',
-            '#markup' => '<a target="_blank" href=' . $form_state->getValue('input-doi') . '>Проверить DOI</a>',
+            '#markup' => '<a id="form-journal-check-doi" target="_blank" href="https://doi.org/">Проверить DOI</a>',
         ];
 
-        $form['input-author'] = [
-            '#type' => 'textarea',
-            '#title' => 'Автор(ы)',
-            '#placeholder' => 'Антонов С. Ю., Антонова А. В.',
-            '#required' => true,
-            '#id' => 'form-journal-author',
-            '#rows' => '2'
+        $num_names = $form_state->get('num_names');
+
+        if ($num_names === NULL) {
+            $form_state->set('num_names', 1);
+        }
+
+        $form['#tree'] = TRUE;
+
+        $form['container']['names_fieldset'] = [
+            '#type' => 'fieldset',
+            '#prefix' => '<div id="names-fieldset-wrapper">',
+            '#suffix' => '</div>',
+            '#title' => 'Автор(ы)'
         ];
 
-        $form['input-release'] = [
+        for ($i = 1; $i <= $form_state->get('num_names'); $i++) {
+
+            $form['container']['names_fieldset']['author_set_' . $i] = [
+                '#type' => 'fieldset',
+                '#title' => 'Автор ' . $i,
+                '#attributes' => [' class' => 'author_set_item']
+            ];
+
+            $form['container']['names_fieldset']['author_set_' . $i]['author_first_name_' . $i] = [
+                '#type' => 'textfield',
+                '#title' => 'Имя',
+                '#required' => TRUE,
+                '#id' => 'author_first_name_' . $i,
+            ];
+
+            $form['container']['names_fieldset']['author_set_' . $i]['author_last_name_' . $i] = [
+                '#type' => 'textfield',
+                '#title' => 'Фамилия',
+                '#required' => TRUE,
+                '#id' => 'author_last_name_' . $i,
+            ];
+
+            $form['container']['names_fieldset']['author_set_' . $i]['author_middle_name_' . $i] = [
+                '#type' => 'textfield',
+                '#title' => 'Отчество',
+                '#required' => FALSE,
+                '#id' => 'author_middle_name_' . $i,
+            ];
+        }
+
+        $form['container']['names_fieldset']['actions'] = [
+            '#type' => 'actions',
+        ];
+
+        $form['container']['names_fieldset']['actions']['add_name'] = [
+            '#type' => 'submit',
+            '#value' => 'Добавить автора',
+            '#submit' => ['::addAuthorCallback'],
+            '#limit_validation_errors' => [
+                [
+                    'container',
+                    'names_fieldset'
+                ]
+            ]
+        ];
+
+        if ($form_state->get('num_names') > 1) {
+            $form['container']['names_fieldset']['actions']['remove_name'] = [
+                '#type' => 'submit',
+                '#value' => 'Remove one',
+                '#submit' => ['::removeAuthorCallback'],
+                '#limit_validation_errors' => []
+            ];
+        }
+
+        $form['container']['release'] = [
             '#type' => 'textarea',
             '#title' => 'Название статьи',
             '#placeholder' => 'К теореме Ченга. II',
@@ -126,7 +142,7 @@ class JournalForm extends FormBase
             '#rows' => '2'
         ];
 
-        $form['input-name'] = [
+        $form['container']['name'] = [
             '#type' => 'textarea',
             '#title' => 'Название журнала',
             '#placeholder' => 'Дифферинциальные уравнения',
@@ -135,7 +151,7 @@ class JournalForm extends FormBase
             '#rows' => '2'
         ];
 
-        $form['input-year'] = [
+        $form['container']['year'] = [
             '#type' => 'textfield',
             '#attributes' => [
                 ' type' => 'number',
@@ -148,7 +164,7 @@ class JournalForm extends FormBase
             '#id' => 'form-journal-year'
         ];
 
-        $form['input-tome-num'] = [
+        $form['container']['tome-num'] = [
             '#type' => 'textfield',
             '#attributes' => [
                 ' type' => 'number',
@@ -161,7 +177,7 @@ class JournalForm extends FormBase
             '#id' => 'form-journal-tome-num'
         ];
 
-        $form['input-volume'] = [
+        $form['container']['volume'] = [
             '#type' => 'textfield',
             '#attributes' => [
                 ' type' => 'number',
@@ -174,7 +190,7 @@ class JournalForm extends FormBase
             '#id' => 'form-journal-volume'
         ];
 
-        $form['input-pages-from'] = [
+        $form['container']['pages-from'] = [
             '#type' => 'textfield',
             '#attributes' => [
                 ' type' => 'number',
@@ -187,7 +203,7 @@ class JournalForm extends FormBase
             '#id' => 'form-journal-pages-from'
         ];
 
-        $form['input-pages-to'] = [
+        $form['container']['pages-to'] = [
             '#type' => 'textfield',
             '#attributes' => [
                 ' type' => 'number',
@@ -200,102 +216,152 @@ class JournalForm extends FormBase
             '#id' => 'form-journal-pages-to'
         ];
 
-        $form['input-other'] = [
+        $form['container']['other'] = [
             '#type' => 'textarea',
             '#title' => 'Долнительные данные',
             '#placeholder' => '',
-            '#required' => true,
             '#id' => 'form-journal-other',
             '#rows' => '2'
         ];
 
         // hidden fiels //
 
-        $form['input-url'] = [
+        $isEversion = $form_state->get('electronic');
+
+        if ($isEversion === NULL) {
+            $form_state->set('electronic', FALSE);
+        }
+
+        $form['container']['eversion_container'] = [
+            '#type' => 'container',
+            '#title' => 'Электронная версия',
+            '#prefix' => '<div id="electronic-fieldset-wrapper">',
+            '#suffix' => '</div>',
+            '#access' => $form_state->get('electronic')
+        ];
+
+        $form['container']['eversion_container']['url'] = [
             '#type' => 'textarea',
             '#title' => 'URL',
             '#placeholder' => 'https://example.com',
             '#required' => true,
             '#id' => 'form-journal-url',
-            '#access' => $form_state->getValue('select-material') == 'electronic',
             '#rows' => 2
         ];
 
-        $form['input-date'] = [
+        $form['container']['eversion_container']['date'] = [
             '#type' => 'date',
             '#title' => 'Дата обращения',
             '#required' => true,
             '#id' => 'form-journal-date',
-            '#access' => $form_state->getValue('select-material') === 'electronic',
+            '#default_value' => date('Y-m-d'),
             '#attributes' => [
                 ' min' => '1900-01-01',
                 ' max' => date('Y-m-d'),
-            ]
+            ],
         ];
 
-        $form['eversion-conatiner'] = [
-            '#type' => 'container',
-            '#id' => 'edit-fields-journal-e-version'
+        $form['container']['eversion_container']['remove_btn'] = [
+            '#type' => 'submit',
+            '#value' => 'удалить эл. версию',
+            '#submit' => ['::updateEversion'],
+            '#limit_validation_errors' => []
         ];
 
 
 
+        $form['container']['actions'] = [
+            '#type' => 'actions'
+        ];
 
-
-
-
-
-        $form['display_result'] = [
-            '#type' => 'button',
+        $form['container']['actions']['result'] = [
+            '#type' => 'submit',
             '#value' => 'Посмотреть результат',
-            '#id' => 'display-journal-stroke-form-btn'
+            '#submit' => ['::allowDisplayStroke']
         ];
 
-        $form['result_text'] = [
+        $form['container']['result_text'] = [
             '#type' => 'item',
             '#title' => 'Результат:',
             '#markup' => '<div id="result-journal-text"></div>',
         ];
 
-        $form['result_input'] = [
-            '#type' => 'textarea',
-            '#title' => 'Редактировать:',
-            '#id' => 'form-journal-result-input',
-            '#rows' => '2',
-            '#description' => 'В "Мои списки" сохранится текст из поля "Редактировать"',
-            '#required' => true
+        $form['hidden_result_stroke'] = [
+            '#type' => 'textfield',
+            '#id' => 'result-journal-text-hidden',
+            '#attributes' => [
+                ' hidden' => 'true'
+            ]
         ];
+
+
+        $form['#attached']['library'][] = 'journal_generate_form/main';
+        $form['#attached']['library'][] = 'journal_generate_form/doi';
+        $form['#attached']['library'][] = $form_state->get('lib');
+
 
         $form['submit'] = [
             '#type' => 'submit',
-            '#value' => \Drupal::currentUser()->isAuthenticated() ? 'Сохранить список' : 'Войдите чтобы сохранить',
-            '#button_type' => 'primary',
+            '#value' => 'Сохранить список',
+            '#suffix' => 'Чтобы сохранить список, сначала нажмите "Посмотреть результат"',
+            '#disabled' => boolval(!$form_state->get('is_submit_btn_enabled'))
         ];
 
-        $form['#attached']['library'][] = 'journal_generate_form/journal_generate_form';
+        $form['note'] = [
+            '#type' => 'item',
+            '#markup' => 'Нужно сначала <a href="/user/login">Войти</a>',
+            '#access' => boolval($form_state->get('is_display_note'))
+        ];
 
         return $form;
     }
 
+    public function addAuthorCallback(array &$form, FormStateInterface $form_state)
+    {
+        $name_field = $form_state->get('num_names');
+        $form_state->set('num_names', $name_field + 1);
+        return $form_state->setRebuild(TRUE);
+    }
+
+    public function removeAuthorCallback(array &$form, FormStateInterface $form_state)
+    {
+        $name_field = $form_state->get('num_names');
+        if ($form_state->get('num_names') > 1) {
+            $form_state->set('num_names', $name_field - 1);
+        }
+        $form_state->setRebuild(TRUE);
+    }
+
+    public function updateEversion($form, FormStateInterface $form_state)
+    {
+        $old = $form_state->get('electronic');
+        $form_state->set('electronic', !$old);
+        $form_state->setRebuild(TRUE);
+    }
+
+    public function allowDisplayStroke($form, FormStateInterface $form_state)
+    {
+        $form_state->set('lib', 'journal_generate_form/generate_str');
+        $form_state->set('is_submit_btn_enabled', TRUE);
+        $form_state->setRebuild(TRUE);
+    }
+
     public function submitForm(array &$form, FormStateInterface $form_state)
     {
-        $form_state->setRebuild(true);
-
-        $title_val = $form_state->getValue('input-title');
 
         if (\Drupal::currentUser()->isAuthenticated()) {
             $node = Node::create(['type' => 'article']);
-            $node->setTitle($title_val !== '' ? $title_val : 'Список без заголовка');
-            $node->body->value = $form_state->getValue('result_input');
-            $node->body->format = 'full_html';
-            $node->field_type->value = 'Журнал';
+            $node->setTitle($form_state->getValue(array('container', 'title-article'), 'Список без заголовка'));
+            $node->body->value = $form_state->getValue('hidden_result_stroke');
+            $node->body->format = 'basic_html';
+            $node->field_type->value = 'Статья в журнале';
             $node->setPublished(true);
             $node->save();
-
-            $this->messenger()->addMessage('Журнал успешно сохранён!');
+            $this->messenger()->addMessage('Статья в журнале успешно сохранина!');
         } else {
-            $response = new RedirectResponse('/user/login', 301);
-            $response->send();
+            $form_state->set('is_display_note', TRUE);
         }
+
+        $form_state->setRebuild();
     }
 }

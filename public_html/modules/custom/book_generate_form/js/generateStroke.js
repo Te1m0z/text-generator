@@ -2,7 +2,7 @@
   $(document).ready(function () {
     let str = getBookStroke()
     $('#result-book-text').html(str)
-    $('#result-book-text').val(str)
+    $('#result-book-text-hidden').val(str)
   })
 
   function getBookStroke() {

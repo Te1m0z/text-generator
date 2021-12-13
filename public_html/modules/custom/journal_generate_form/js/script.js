@@ -28,8 +28,8 @@
         let other = $('#form-journal-other').val()
         let url = $('#form-journal-url').val()
         let date = $('#form-journal-date').val()
-        let lang = $('#form-journal-lang').val()    
-        let material = $('#form-journal-material').val()
+        // let lang = $('#form-journal-lang').val()    
+        // let material = $('#form-journal-material').val()
 
         let isRU = (lang === 'ru')
         let isEVersion = (material === 'electronic')
