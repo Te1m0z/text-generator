@@ -291,13 +291,6 @@ class BookForm extends FormBase
       '#markup' => '<div id="result-book-text"></div>',
     ];
 
-//    $form['container']['result_input'] = [
-//      '#type' => 'textarea',
-//      '#title' => 'Редактировать:',
-//      '#id' => 'form-book-result-input',
-//      '#rows' => '2',
-//    ];
-
     $form['#attached']['library'][] = 'book_generate_form/main';
     $form['#attached']['library'][] = 'book_generate_form/doi';
     $form['#attached']['library'][] = $form_state->get('lib');
@@ -305,6 +298,12 @@ class BookForm extends FormBase
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => 'Сохранить список',
+    ];
+
+    $form['note'] = [
+      '#type' => 'item',
+      '#markup' => 'Нужно сначала <a href="/user/login">зарегаться</a>',
+      '#access' => boolval($form_state->get('is_display_note'))
     ];
 
     return $form;
@@ -341,26 +340,20 @@ class BookForm extends FormBase
 
   public function submitForm(array &$form, FormStateInterface $form_state)
   {
-    $form_state->setRebuild(TRUE);
-    $this->messenger()->addMessage('dada');
+     $title_val = $form_state->getValue('input-title');
 
-    // $form_state->setRebuild();
-    // $title_val = $form_state->getValue('input-title');
-
-    // if (\Drupal::currentUser()->isAuthenticated()) {
-    //     $node = Node::create(['type' => 'article']);
-    //     $node->setTitle($title_val !== '' ? $title_val : 'Список без заголовка');
-    //     $node->body->value = $form_state->getValue('result_input');
-    //     $node->body->format = 'full_html';
-    //     $node->field_type->value = 'Книга';
-    //     $node->setPublished(true);
-    //     $node->save();
-
-    //     $this->messenger()->addMessage('Книга успешно сохранина!');
-    // } else {
-         \Drupal\redirect\Entity\Redirect::create([
-           'redi'
-         ])
-    // }
+    if (\Drupal::currentUser()->isAuthenticated()) {
+      $node = Node::create(['type' => 'article']);
+      $node->setTitle($title_val !== '' ? $title_val : 'Список без заголовка');
+      $node->body->value = $form_state->getValue('result_input');
+      $node->body->format = 'full_html';
+      $node->field_type->value = 'Книга';
+      $node->setPublished(true);
+      $node->save();
+      $this->messenger()->addMessage('Книга успешно сохранина!');
+    } else {
+      $form_state->set('is_display_note', true);
+      $form_state->setRebuild(TRUE);
+    }
   }
 }
