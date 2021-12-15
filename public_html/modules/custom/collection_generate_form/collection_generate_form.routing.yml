@@ -1,0 +1,7 @@
+collection_generate_form.settings:
+  path: '/collection'
+  defaults:
+    _form: '\Drupal\collection_generate_form\Form\CollectionForm'
+    _title: 'Создать библиографический спискок для сборника'
+  requirements:
+    _permission: 'access content'

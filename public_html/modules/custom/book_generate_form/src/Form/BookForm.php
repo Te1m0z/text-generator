@@ -356,7 +356,7 @@ class BookForm extends FormBase
 
     if (\Drupal::currentUser()->isAuthenticated()) {
       $node = Node::create(['type' => 'article']);
-      $node->setTitle($form_state->getValue(array('container', 'title-article'), 'Список без заголовка'));
+      $node->setTitle(($form_state->getValue(['container', 'title-article']) == NULL) ? 'Список без заголовка' : $form_state->getValue(['container', 'title-article']));
       $node->body->value = $form_state->getValue('hidden_result_stroke');
       $node->body->format = 'basic_html';
       $node->field_type->value = 'Книга';

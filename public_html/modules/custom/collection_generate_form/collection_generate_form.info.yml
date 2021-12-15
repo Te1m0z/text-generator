@@ -1,0 +1,5 @@
+name: "Collection generate form module"
+description: none
+type: module
+core_version_requirement: ^9
+package: custom
