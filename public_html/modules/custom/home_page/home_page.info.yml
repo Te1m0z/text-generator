@@ -1,5 +1,0 @@
-name: 'home_page'
-type: 'module'
-description: none
-package: custom
-core_version_requirement: ^9

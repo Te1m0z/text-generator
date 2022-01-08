@@ -1,7 +1,0 @@
-book_generate_form.settings:
-  path: '/book'
-  defaults:
-    _form: '\Drupal\book_generate_form\Form\BookForm'
-    _title: 'Создать библиографический список для книги'
-  requirements:
-    _permission: 'access content'

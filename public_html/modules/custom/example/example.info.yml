@@ -1,5 +1,0 @@
-name: 'Example entity module'
-type: 'module'
-description: 'example content entity'
-package: Custom
-core_version_requirement: ^9

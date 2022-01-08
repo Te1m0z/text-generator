@@ -1,5 +1,0 @@
-name: 'Calculator'
-description: none
-type: module
-package: custom
-core_version_requirement: ^9
